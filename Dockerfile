@@ -17,7 +17,7 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ---- Stage 2: runtime image ----
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
         postgresql-dev \
@@ -46,10 +46,7 @@ RUN mkdir -p storage/framework/{cache,sessions,testing,views} \
     && chmod -R 775 storage bootstrap/cache
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-# Windows checkouts often save this file with CRLF line endings, which
-# breaks the #!/bin/sh shebang on Linux ("exec format error"). Strip any
-# stray \r regardless of how the file arrived here.
-RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 8000
 
