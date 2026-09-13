@@ -9,11 +9,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('auth/google/redirect', [\App\Http\Controllers\Auth\GoogleController::class, 'redirect'])
-        ->name('auth.google.redirect');
-
-    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'callback'])
-        ->name('auth.google.callback');
 
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
