@@ -16,7 +16,18 @@ RUN composer install \
 COPY . .
 RUN composer dump-autoload --optimize --no-dev --no-scripts
 
-# ---- Stage 2: runtime image ----
+# ---- Stage 2: build frontend assets with Vite ----
+FROM node:20-alpine AS assets
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY resources ./resources
+COPY vite.config.js ./
+RUN npm run build
+
+# ---- Stage 3: runtime image ----
 FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
@@ -40,6 +51,7 @@ RUN apk add --no-cache \
 WORKDIR /var/www/html
 
 COPY --from=vendor /app /var/www/html
+COPY --from=assets /app/public/build /var/www/html/public/build
 
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} \
         storage/logs storage/app/public bootstrap/cache \
