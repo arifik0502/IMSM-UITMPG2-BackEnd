@@ -1,0 +1,56 @@
+# Render Blueprint — lets you provision the API + a Postgres database
+# together via "New +" -> "Blueprint" in the Render dashboard, instead of
+# clicking through each setting by hand. See DEPLOYMENT.md for the full
+# walkthrough either way.
+
+databases:
+  - name: attendance-db
+    plan: free
+    databaseName: attendance
+    user: attendance
+
+services:
+  - type: web
+    name: attendance-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: APP_NAME
+        value: "Attendance System"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_TIMEZONE
+        value: UTC
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: attendance-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FILESYSTEM_DISK
+        value: public
+      - key: ATTENDANCE_PHOTOS_DISK
+        value: public
+      - key: MAIL_MAILER
+        value: log
+      - key: COMPANY_WORK_START
+        value: "09:00"
+      - key: COMPANY_WORK_END
+        value: "18:00"
+      - key: COMPANY_LATE_GRACE_MINUTES
+        value: "10"
+      # Set this to your real Vercel URL after the frontend is deployed,
+      # e.g. https://your-app.vercel.app (comma-separate multiple origins).
+      - key: FRONTEND_URL
+        value: "http://localhost:5500"
