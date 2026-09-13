@@ -136,7 +136,6 @@
                     @empty
                         <tr><td colspan="5" class="py-4 text-gray-400 text-center">No attendance records yet.</td></tr>
                     @endforelse
-                    @endforelse
                 </tbody>
             </table>
         </div>
