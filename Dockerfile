@@ -1,23 +1,44 @@
 # syntax=docker/dockerfile:1
 
-# ---- Stage 1: install PHP dependencies with Composer (has full internet
-#      access on Render's build machine — this does NOT run on your own
-#      machine unless you build the image locally) ----
-FROM composer:2 AS vendor
+# ---- Stage 1: Composer dependencies ----
+FROM php:8.4-cli-alpine AS vendor
+
+RUN apk add --no-cache \
+        postgresql-dev \
+        sqlite-dev \
+        oniguruma-dev \
+        libzip-dev \
+        zip \
+        unzip \
+        icu-dev
+
+RUN docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        pdo_sqlite \
+        mbstring \
+        zip \
+        bcmath \
+        intl \
+        opcache
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
-COPY composer.json ./
+
+COPY composer.json composer.lock ./
+
 RUN composer install \
     --no-dev \
     --no-scripts \
-    --no-autoloader \
-    --ignore-platform-reqs
+    --no-autoloader
 
 COPY . .
+
 RUN composer dump-autoload --optimize --no-dev --no-scripts
 
 # ---- Stage 2: runtime image ----
-FROM php:8.3-cli-alpine
+FROM php:8.4-cli-alpine
 
 RUN apk add --no-cache \
         postgresql-dev \
