@@ -109,6 +109,59 @@ already reads the disk name from `ATTENDANCE_PHOTOS_DISK`.
 Alternatively, Render offers **persistent disks** as a paid add-on you can
 mount at `storage/app/public` — simpler, but ties you to a single instance.
 
+## 5. Email (forgot-password codes) — Gmail SMTP
+
+The forgot-password flow (both `/forgot-password` on the web app and
+`/api/auth/forgot-password` on the API) is fully implemented already — it
+just needs real mail credentials to actually deliver the 6-digit code
+instead of writing it to the log.
+
+**Generate a Gmail App Password** (this is different from your normal Gmail
+password — Google blocks plain-password SMTP logins):
+
+1. Turn on **2-Step Verification** on the Gmail account, if it isn't
+   already: https://myaccount.google.com/security
+2. Go to https://myaccount.google.com/apppasswords, sign in again if asked.
+3. Under "App name" type something like `Attendance System` and click
+   **Create**. Google shows a 16-character password (spaces don't matter) —
+   copy it now, it's shown only once.
+
+**Set the environment variables** on the Render web service (Environment
+tab):
+
+| Key | Value |
+|---|---|
+| `MAIL_MAILER` | `smtp` |
+| `MAIL_HOST` | `smtp.gmail.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_ENCRYPTION` | `tls` |
+| `MAIL_USERNAME` | your full Gmail address, e.g. `you@gmail.com` |
+| `MAIL_PASSWORD` | the 16-character App Password from step 3 (no spaces) |
+| `MAIL_FROM_ADDRESS` | same Gmail address |
+| `MAIL_FROM_NAME` | `Attendance System` |
+
+If you deploy via the `render.yaml` Blueprint, `MAIL_USERNAME`,
+`MAIL_PASSWORD`, and `MAIL_FROM_ADDRESS` are marked `sync: false`, which
+means Render will prompt you to type them into the dashboard rather than
+storing them in the file/git — fill them in there.
+
+Save, and Render restarts the service automatically. Test it:
+
+```bash
+curl -X POST https://attendance-api-xxxx.onrender.com/api/auth/forgot-password \
+  -H "Content-Type: application/json" -H "Accept: application/json" \
+  -d '{"email":"demo@example.com"}'
+```
+
+You should get the code in your inbox within a few seconds. Gmail's normal
+account sending limit is 500 emails/day, which is plenty for this kind of
+app. If Render's outbound network ever blocks port 587 (uncommon, but some
+hosts do), switch `MAIL_PORT` to `465` and `MAIL_ENCRYPTION` to `ssl`.
+
+For local development, leave `MAIL_MAILER=log` in your local `.env` — the
+code will just print to your terminal/log instead of sending a real email,
+which is faster for testing.
+
 ## 6. Updating FRONTEND_URL after deploying the frontend
 
 Once your Vercel frontend is live, come back to the Render service's
