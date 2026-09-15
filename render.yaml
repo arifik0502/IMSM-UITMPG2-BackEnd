@@ -42,8 +42,28 @@ services:
         value: public
       - key: ATTENDANCE_PHOTOS_DISK
         value: public
+      # ---- Gmail SMTP for the forgot-password code email ----
+      # MAIL_USERNAME / MAIL_PASSWORD are marked sync: false so Render won't
+      # store them in this file or in git — you paste them into the
+      # service's Environment tab in the Render dashboard instead.
+      # MAIL_PASSWORD is a Gmail "App Password" (needs 2-Step Verification
+      # enabled): https://myaccount.google.com/apppasswords
       - key: MAIL_MAILER
-        value: log
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_ENCRYPTION
+        value: tls
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: "Attendance System"
       - key: COMPANY_WORK_START
         value: "09:00"
       - key: COMPANY_WORK_END
