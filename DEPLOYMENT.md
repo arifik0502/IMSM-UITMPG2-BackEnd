@@ -109,15 +109,6 @@ already reads the disk name from `ATTENDANCE_PHOTOS_DISK`.
 Alternatively, Render offers **persistent disks** as a paid add-on you can
 mount at `storage/app/public` — simpler, but ties you to a single instance.
 
-## 5. Email (forgot-password codes)
-
-`MAIL_MAILER=log` writes the 6-digit reset code to the application log
-instead of sending a real email — fine for testing (view it in Render's
-Logs tab), not for real users. For real delivery, set up a transactional
-email provider (Resend, Mailgun, Postmark all have free tiers) and set the
-standard Laravel `MAIL_MAILER=smtp` + `MAIL_HOST`/`MAIL_PORT`/`MAIL_USERNAME`/
-`MAIL_PASSWORD` env vars.
-
 ## 6. Updating FRONTEND_URL after deploying the frontend
 
 Once your Vercel frontend is live, come back to the Render service's
