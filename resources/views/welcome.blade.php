@@ -19,14 +19,7 @@
                 {{ session('success') }}
             </div>
         @endif
-
-        <div class="page-container pb-0">
-            <div class="uitm-hero">
-                <div class="uitm-hero-text">
-                </div>
-            </div>
-        </div>
-
+                
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Welcome</h1>
         <p class="text-gray-600 mb-10">Employee attendance, leave, and equipment borrowing in one place.</p>
 
