@@ -1,0 +1,240 @@
+@import "tailwindcss";
+
+@source "../views/**/*.blade.php";
+@source "../js/**/*.js";
+
+/* ================================================================
+   NEO-BRUTALISM THEME
+   ================================================================ */
+
+@theme {
+    --font-sans: "Courier New", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+
+    /* Neutral colors */
+    --color-gray-50: #ffffff;
+    --color-gray-100: #f5f5f5;
+    --color-gray-200: #e5e5e5;
+    --color-gray-300: #d4d4d4;
+    --color-gray-400: #a3a3a3;
+    --color-gray-500: #737373;
+    --color-gray-600: #525252;
+    --color-gray-700: #333333;
+    --color-gray-800: #1a1a1a;
+    --color-gray-900: #000000;
+
+    /* Brand colors */
+    --color-brand-50: #fff1f0;
+    --color-brand-100: #ffdedc;
+    --color-brand-200: #ffb8b4;
+    --color-brand-300: #ff8d87;
+    --color-brand-400: #ff6e68;
+    --color-brand-500: #ff5e5b;
+    --color-brand-600: #e6423f;
+    --color-brand-700: #c73330;
+}
+
+/* ================================================================
+   NEO-BRUTALISM SETTINGS
+   ================================================================ */
+
+:root {
+    --nb-border-width: 2px;
+    --nb-border-color: #000000;
+    --nb-radius: 10px;
+    --nb-radius-sm: 6px;
+
+    --nb-shadow-sm: 4px;
+    --nb-shadow-md: 6px;
+    --nb-shadow-lg: 8px;
+    --nb-shadow-hover: 10px;
+}
+
+/* ================================================================
+   BASE
+   ================================================================ */
+
+@layer base {
+    body {
+        @apply text-gray-900;
+    }
+
+    ::selection {
+        @apply bg-brand-300 text-gray-900;
+    }
+
+    h1,
+    h2,
+    h3 {
+        @apply font-bold tracking-tight;
+    }
+}
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-wide transition-all duration-150 ease-out;
+
+        border: var(--nb-border-width) solid var(--nb-border-color);
+        border-radius: var(--nb-radius);
+        box-shadow:
+            var(--nb-shadow-sm)
+            var(--nb-shadow-sm)
+            0
+            var(--nb-border-color);
+    }
+
+    .btn:hover:not(:disabled) {
+        transform: translate(-2px, -2px);
+
+        box-shadow:
+            var(--nb-shadow-hover)
+            var(--nb-shadow-hover)
+            0
+            var(--nb-border-color);
+    }
+
+    .btn:active:not(:disabled) {
+        transform: translate(1px, 1px);
+
+        box-shadow:
+            2px
+            2px
+            0
+            var(--nb-border-color);
+    }
+
+    .btn:disabled {
+        @apply cursor-not-allowed opacity-50;
+
+        box-shadow: none;
+        transform: translate(0, 0);
+    }
+
+    .btn-primary {
+        @apply bg-brand-500 text-white;
+    }
+
+    .btn-danger {
+        @apply bg-red-500 text-white;
+    }
+
+    .btn-secondary {
+        @apply bg-white text-gray-900;
+    }
+}
+
+/* ================================================================
+   CARDS
+   ================================================================ */
+
+@layer components {
+    .card {
+        @apply bg-white p-4 sm:p-6;
+
+        border: var(--nb-border-width) solid var(--nb-border-color);
+        border-radius: var(--nb-radius);
+
+        box-shadow:
+            var(--nb-shadow-lg)
+            var(--nb-shadow-lg)
+            0
+            var(--nb-border-color);
+    }
+}
+
+/* ================================================================
+   BADGES
+   ================================================================ */
+
+@layer components {
+    .badge {
+        @apply inline-flex items-center px-2.5 py-1 text-xs font-bold uppercase tracking-wide leading-none;
+
+        border: 2px solid var(--nb-border-color);
+        border-radius: var(--nb-radius-sm);
+    }
+
+    .badge-green {
+        @apply bg-green-300 text-gray-900;
+    }
+
+    .badge-red {
+        @apply bg-red-300 text-gray-900;
+    }
+
+    .badge-yellow {
+        @apply bg-yellow-300 text-gray-900;
+    }
+
+    .badge-gray {
+        @apply bg-gray-200 text-gray-900;
+    }
+
+    .badge-blue {
+         @apply bg-blue-300 text-gray-900; 
+        }
+}
+
+/* ================================================================
+   FORM FIELDS
+   ================================================================ */
+
+@layer components {
+    .form-field {
+        @apply w-full bg-white px-3 py-2.5 text-gray-900 transition sm:text-sm placeholder:text-gray-400;
+
+        border: var(--nb-border-width) solid var(--nb-border-color);
+        border-radius: var(--nb-radius-sm);
+    }
+
+    .form-field:focus {
+        outline: none;
+
+        box-shadow:
+            var(--nb-shadow-sm)
+            var(--nb-shadow-sm)
+            0
+            var(--nb-border-color);
+    }
+
+    .form-field:disabled {
+        @apply bg-gray-100 text-gray-400;
+    }
+}
+
+/* ================================================================
+   OPTIONAL NEO-BRUTALIST UTILITY CLASSES
+   ================================================================ */
+
+@layer components {
+    .nb-border {
+        border: var(--nb-border-width) solid var(--nb-border-color);
+    }
+
+    .nb-shadow {
+        box-shadow:
+            var(--nb-shadow-md)
+            var(--nb-shadow-md)
+            0
+            var(--nb-border-color);
+    }
+
+    .nb-shadow-lg {
+        box-shadow:
+            var(--nb-shadow-lg)
+            var(--nb-shadow-lg)
+            0
+            var(--nb-border-color);
+    }
+
+    .nb-radius {
+        border-radius: var(--nb-radius);
+    }
+
+    .nb-radius-sm {
+        border-radius: var(--nb-radius-sm);
+    }
+}
