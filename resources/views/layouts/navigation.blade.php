@@ -33,6 +33,15 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:gap-3">
+                <button type="button" data-theme-toggle class="icon-btn" aria-label="Toggle color theme">
+                    <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                    <svg data-theme-icon-moon class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+                    </svg>
+                </button>
                 @if (auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-brand-600 hover:underline">Admin Panel</a>
                 @endif
@@ -66,6 +75,18 @@
                 <span class="chat-unread-badge hidden ml-2 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold">0</span>
             </a>
             <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50">Profile ({{ auth()->user()->name }})</a>
+            <div class="flex items-center justify-between px-3 py-2">
+                <span class="text-base font-medium text-gray-600">Theme</span>
+                <button type="button" data-theme-toggle class="icon-btn" aria-label="Toggle color theme">
+                    <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                    <svg data-theme-icon-moon class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+                    </svg>
+                </button>
+            </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-gray-50">Log Out</button>
