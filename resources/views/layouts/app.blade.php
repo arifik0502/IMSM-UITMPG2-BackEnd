@@ -6,6 +6,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? config('app.name', 'Attendance System') }}</title>
 
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('isms_theme');
+                if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+            } catch (e) {}
+        })();
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gray-50 min-h-screen" data-chat-unread-url="{{ route('chat.unread-count') }}">
