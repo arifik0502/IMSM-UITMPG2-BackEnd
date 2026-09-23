@@ -87,24 +87,75 @@
     --shadow-lift: 0 2px 4px rgba(24, 23, 15, 0.05), 0 24px 48px -18px rgba(24, 23, 15, 0.28);
     --shadow-glow-brand: 0 0 0 4px rgba(124, 71, 186, 0.14);
 
-    /* Semantic tokens for light/dark parity */
+}
+
+/* ----------------------------------------------------------------
+   THEME TOKENS — light (default), then the OS-preference fallback,
+   then the manual override. All three define the exact same variable
+   list so `data-theme="dark"` (set by the navbar toggle) and a plain
+   dark-mode browser behave identically. See resources/js/theme.js.
+   ---------------------------------------------------------------- */
+:root {
     --color-surface: var(--color-gray-50);
     --color-surface-elevated: #ffffff;
+    --color-surface-sunken: var(--color-gray-100);
+    --color-table-border: var(--color-gray-100);
+    --color-row-hover: rgba(124, 71, 186, 0.05);
     --color-text-primary: var(--color-gray-900);
     --color-text-muted: var(--color-gray-500);
     --color-border: var(--color-gray-200);
     --color-border-strong: var(--color-gray-300);
+    --chat-me-from: var(--color-brand-500);
+    --chat-me-to: var(--color-brand-700);
+    --shadow-tab-active: 0 1px 2px rgba(24, 23, 15, 0.08), 0 0 0 1px var(--color-border);
+
+    /* Subtle brand wash behind every page — replaces the old flat fill */
+    --page-gradient:
+        radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.10), transparent 55%),
+        radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.08), transparent 50%),
+        radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.06), transparent 60%);
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
+    /* Only applies when the user hasn't explicitly chosen "light" */
+    :root:not([data-theme="light"]) {
         --color-surface: #131210;
         --color-surface-elevated: #1c1b17;
+        --color-surface-sunken: #232019;
+        --color-table-border: #232019;
+        --color-row-hover: rgba(151, 104, 205, 0.08);
         --color-text-primary: var(--color-gray-50);
         --color-text-muted: var(--color-gray-400);
         --color-border: #2c2a24;
         --color-border-strong: #3a382f;
+        --chat-me-from: var(--color-brand-400);
+        --chat-me-to: var(--color-brand-600);
+        --shadow-tab-active: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-border);
+        --page-gradient:
+            radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.18), transparent 55%),
+            radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.10), transparent 50%),
+            radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.14), transparent 60%);
     }
+}
+
+:root[data-theme="dark"] {
+    /* Explicit toggle — same values as the media-query block above */
+    --color-surface: #131210;
+    --color-surface-elevated: #1c1b17;
+    --color-surface-sunken: #232019;
+    --color-table-border: #232019;
+    --color-row-hover: rgba(151, 104, 205, 0.08);
+    --color-text-primary: var(--color-gray-50);
+    --color-text-muted: var(--color-gray-400);
+    --color-border: #2c2a24;
+    --color-border-strong: #3a382f;
+    --chat-me-from: var(--color-brand-400);
+    --chat-me-to: var(--color-brand-600);
+    --shadow-tab-active: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-border);
+    --page-gradient:
+        radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.18), transparent 55%),
+        radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.10), transparent 50%),
+        radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.14), transparent 60%);
 }
 
 /* ================================================================
@@ -118,9 +169,12 @@
 
     body {
         background-color: var(--color-surface);
+        background-image: var(--page-gradient);
+        background-attachment: fixed;
         color: var(--color-text-primary);
         font-feature-settings: "ss01", "cv11";
         -webkit-font-smoothing: antialiased;
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     ::selection {
@@ -421,25 +475,8 @@
 
     .form-field:disabled {
         @apply cursor-not-allowed;
-        background-color: var(--color-gray-100);
+        background-color: var(--color-surface-sunken);
         color: var(--color-gray-400);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .form-field {
-            border-color: var(--color-border);
-            background-color: var(--color-surface-elevated);
-            color: var(--color-text-primary);
-        }
-
-        .form-field:hover:not(:disabled):not(:focus) {
-            border-color: var(--color-border-strong);
-        }
-
-        .form-field:disabled {
-            background-color: #232019;
-            color: var(--color-gray-500);
-        }
     }
 
     select.form-field {
@@ -481,15 +518,8 @@
 
     .data-table tbody td {
         @apply border-b px-5 py-3.5 align-middle first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
-        border-color: var(--color-gray-100);
+        border-color: var(--color-table-border);
         color: var(--color-gray-700);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .data-table tbody td {
-            border-color: #232019;
-            color: var(--color-gray-300);
-        }
     }
 
     .data-table tbody tr:last-child td {
@@ -501,13 +531,7 @@
     }
 
     .data-table tbody tr:hover td {
-        background-color: rgba(124, 71, 186, 0.05);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .data-table tbody tr:hover td {
-            background-color: rgba(151, 104, 205, 0.08);
-        }
+        background-color: var(--color-row-hover);
     }
 
     .num {
@@ -523,13 +547,7 @@
     .seg {
         @apply inline-flex max-w-full gap-1 overflow-x-auto p-1;
         border-radius: var(--radius-lg);
-        background-color: var(--color-gray-100);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .seg {
-            background-color: #201e18;
-        }
+        background-color: var(--color-surface-sunken);
     }
 
     .seg-item {
@@ -558,18 +576,16 @@
     .seg-item[aria-current="page"] {
         @apply text-gray-900;
         background-color: var(--color-surface-elevated);
-        box-shadow:
-            0 1px 2px rgba(24, 23, 15, 0.08),
-            0 0 0 1px var(--color-border);
+        box-shadow: var(--shadow-tab-active);
+    }
+
+    :root[data-theme="dark"] .seg-item[aria-current="page"] {
+        @apply text-white;
     }
 
     @media (prefers-color-scheme: dark) {
-        .seg-item[aria-current="page"] {
+        :root:not([data-theme="light"]) .seg-item[aria-current="page"] {
             @apply text-white;
-            background-color: var(--color-surface-elevated);
-            box-shadow:
-                0 1px 2px rgba(0, 0, 0, 0.3),
-                0 0 0 1px var(--color-border);
         }
     }
 }
@@ -618,6 +634,32 @@
 
     .nav-link[aria-current="page"] {
         color: var(--color-text-primary);
+    }
+
+    /* Icon-only round button — used for the theme toggle */
+    .icon-btn {
+        @apply inline-flex h-9 w-9 shrink-0 items-center justify-center;
+        border-radius: var(--radius-full);
+        color: var(--color-text-muted);
+        transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s var(--ease-fluid);
+    }
+
+    .icon-btn:hover {
+        background-color: var(--color-gray-100);
+        color: var(--color-text-primary);
+    }
+
+    .icon-btn:active {
+        transform: scale(0.92);
+    }
+
+    .nav-dark .icon-btn {
+        color: var(--color-gray-400);
+    }
+
+    .nav-dark .icon-btn:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        color: white;
     }
 
     /* Gold underline — the one deliberate nod to UiTM's secondary
@@ -689,15 +731,8 @@
 
     .chat-bubble-me {
         border-bottom-right-radius: var(--radius-base);
-        background: linear-gradient(180deg, var(--color-brand-500), var(--color-brand-700));
+        background: linear-gradient(180deg, var(--chat-me-from), var(--chat-me-to));
         color: white;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .chat-bubble-me {
-            background: linear-gradient(180deg, var(--color-brand-400), var(--color-brand-600));
-            color: white;
-        }
     }
 
     .chat-bubble-them {
