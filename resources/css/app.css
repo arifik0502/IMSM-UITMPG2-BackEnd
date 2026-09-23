@@ -4,49 +4,88 @@
 @source "../js/**/*.js";
 
 /* ================================================================
-   NEO-BRUTALISM THEME
+   THEME TOKENS
+   Neutral zinc base + one calibrated vermilion accent.
+   Fonts (Geist / Geist Mono) are loaded in layouts/partials/head.
+   Radius scale: 12px base, 16px lg, 9999px full (pills/badges)
+   One accent: brand (vermilion). Semantic colors only for status.
+   Dark mode via CSS variables + Tailwind dark: variant.
    ================================================================ */
 
 @theme {
-    --font-sans: "Courier New", ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
 
-    /* Neutral colors */
-    --color-gray-50: #ffffff;
-    --color-gray-100: #f5f5f5;
-    --color-gray-200: #e5e5e5;
-    --color-gray-300: #d4d4d4;
-    --color-gray-400: #a3a3a3;
-    --color-gray-500: #737373;
-    --color-gray-600: #525252;
-    --color-gray-700: #333333;
-    --color-gray-800: #1a1a1a;
-    --color-gray-900: #000000;
+    /* Radius scale — one system, used everywhere */
+    --radius-base: 12px;     /* buttons, inputs, cards */
+    --radius-lg: 16px;       /* modals, elevated surfaces */
+    --radius-full: 9999px;   /* pills, badges, avatars */
 
-    /* Brand colors */
-    --color-brand-50: #fff1f0;
-    --color-brand-100: #ffdedc;
-    --color-brand-200: #ffb8b4;
-    --color-brand-300: #ff8d87;
-    --color-brand-400: #ff6e68;
-    --color-brand-500: #ff5e5b;
-    --color-brand-600: #e6423f;
-    --color-brand-700: #c73330;
+    /* `gray-*` is used across the views; map it onto zinc so every
+       neutral in the app comes from one cool-neutral family. */
+    --color-gray-50: #fafafa;
+    --color-gray-100: #f4f4f5;
+    --color-gray-200: #e4e4e7;
+    --color-gray-300: #d4d4d8;
+    --color-gray-400: #a1a1aa;
+    --color-gray-500: #71717a;
+    --color-gray-600: #52525b;
+    --color-gray-700: #3f3f46;
+    --color-gray-800: #27272a;
+    --color-gray-900: #18181b;
+    --color-gray-950: #0c0c0e;
+
+    --color-brand-50: #fdf4f2;
+    --color-brand-100: #fbe6e1;
+    --color-brand-200: #f6cbc1;
+    --color-brand-300: #eea494;
+    --color-brand-400: #e37a64;
+    --color-brand-500: #d65a42;
+    --color-brand-600: #bf4630;
+    --color-brand-700: #9f3826;
+    --color-brand-800: #843223;
+    --color-brand-900: #6e2d21;
+
+    /* Semantic status colors (only for status badges/alerts — not general UI) */
+        --color-success-50: #f0fdf4;
+        --color-success-100: #dcfce7;
+        --color-success-200: #bbf7d0;
+        --color-success-600: #16a34a;
+        --color-success-700: #15803d;
+        --color-warning-50: #fffbeb;
+        --color-warning-100: #fef3c7;
+        --color-warning-600: #d97706;
+        --color-warning-700: #b45309;
+        --color-error-50: #fef2f2;
+        --color-error-100: #fee2e2;
+        --color-error-200: #fecaca;
+        --color-error-600: #dc2626;
+        --color-error-700: #b91c1c;
+
+    --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --shadow-diffuse: 0 1px 2px rgba(24, 24, 27, 0.04), 0 12px 32px -12px rgba(24, 24, 27, 0.08);
+    --shadow-lift: 0 1px 2px rgba(24, 24, 27, 0.06), 0 20px 40px -16px rgba(24, 24, 27, 0.16);
+
+    /* Semantic tokens for dark mode parity */
+    --color-surface: var(--color-gray-50);
+    --color-surface-elevated: #ffffff;
+    --color-text-primary: var(--color-gray-900);
+    --color-text-muted: var(--color-gray-500);
+    --color-border: var(--color-gray-200);
+    --color-border-strong: var(--color-gray-300);
 }
 
-/* ================================================================
-   NEO-BRUTALISM SETTINGS
-   ================================================================ */
-
-:root {
-    --nb-border-width: 2px;
-    --nb-border-color: #000000;
-    --nb-radius: 10px;
-    --nb-radius-sm: 6px;
-
-    --nb-shadow-sm: 4px;
-    --nb-shadow-md: 6px;
-    --nb-shadow-lg: 8px;
-    --nb-shadow-hover: 10px;
+/* Dark mode tokens — swap at root, all components inherit */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-surface: var(--color-gray-950);
+        --color-surface-elevated: var(--color-gray-900);
+        --color-text-primary: var(--color-gray-50);
+        --color-text-muted: var(--color-gray-400);
+        --color-border: var(--color-gray-800);
+        --color-border-strong: var(--color-gray-700);
+    }
 }
 
 /* ================================================================
@@ -54,187 +93,689 @@
    ================================================================ */
 
 @layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
     body {
-        @apply text-gray-900;
+        background-color: var(--color-surface);
+        color: var(--color-text-primary);
+        font-feature-settings: "ss01", "cv11";
     }
 
     ::selection {
-        @apply bg-brand-300 text-gray-900;
+        background-color: var(--color-brand-200);
+        color: var(--color-gray-900);
     }
 
     h1,
     h2,
     h3 {
-        @apply font-bold tracking-tight;
+        @apply font-semibold tracking-tight;
+        color: var(--color-text-primary);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-brand-500);
+        outline-offset: 2px;
+    }
+
+    input[type="checkbox"] {
+        accent-color: var(--color-brand-600);
     }
 }
 
 /* ================================================================
    BUTTONS
+   Each variant is self-contained, so `btn-primary` works on its own.
+   Radius: var(--radius-base) = 12px, var(--radius-lg) = 16px
    ================================================================ */
 
 @layer components {
-    .btn {
-        @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold uppercase tracking-wide transition-all duration-150 ease-out;
-
-        border: var(--nb-border-width) solid var(--nb-border-color);
-        border-radius: var(--nb-radius);
-        box-shadow:
-            var(--nb-shadow-sm)
-            var(--nb-shadow-sm)
-            0
-            var(--nb-border-color);
+    .btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-accent,
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap select-none;
+        border-radius: var(--radius-base);
+        transition:
+            transform 0.35s var(--ease-fluid),
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            box-shadow 0.35s var(--ease-fluid),
+            color 0.2s ease;
     }
 
-    .btn:hover:not(:disabled) {
-        transform: translate(-2px, -2px);
-
-        box-shadow:
-            var(--nb-shadow-hover)
-            var(--nb-shadow-hover)
-            0
-            var(--nb-border-color);
+    .btn:active:not(:disabled),
+    .btn-primary:active:not(:disabled),
+    .btn-secondary:active:not(:disabled),
+    .btn-danger:active:not(:disabled),
+    .btn-accent:active:not(:disabled),
+    .btn-ghost:active:not(:disabled) {
+        transform: translateY(1px) scale(0.98);
     }
 
-    .btn:active:not(:disabled) {
-        transform: translate(1px, 1px);
-
-        box-shadow:
-            2px
-            2px
-            0
-            var(--nb-border-color);
-    }
-
-    .btn:disabled {
+    .btn:disabled,
+    .btn-primary:disabled,
+    .btn-secondary:disabled,
+    .btn-danger:disabled,
+    .btn-accent:disabled,
+    .btn-ghost:disabled {
         @apply cursor-not-allowed opacity-50;
-
+        transform: none;
         box-shadow: none;
-        transform: translate(0, 0);
     }
 
     .btn-primary {
-        @apply bg-brand-500 text-white;
+        @apply bg-gray-900 text-white;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            0 1px 2px rgba(24, 24, 27, 0.2);
     }
 
-    .btn-danger {
-        @apply bg-red-500 text-white;
+    .btn-primary:hover:not(:disabled) {
+        @apply bg-gray-800;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.12),
+            0 8px 20px -8px rgba(24, 24, 27, 0.45);
+    }
+
+    .btn-accent {
+        @apply bg-brand-600 text-white;
+    }
+
+    .btn-accent:hover:not(:disabled) {
+        @apply bg-brand-700;
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.14),
+            0 8px 20px -8px rgba(159, 56, 38, 0.5);
     }
 
     .btn-secondary {
-        @apply bg-white text-gray-900;
+        @apply border border-gray-200 bg-white text-gray-800;
+        box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        @apply border-gray-300 bg-gray-50 text-gray-900;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        @apply bg-red-700;
+    }
+
+    .btn-ghost {
+        @apply px-3 text-gray-600;
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+        @apply bg-gray-100 text-gray-900;
+    }
+
+    .btn-lg {
+        @apply px-5 py-3.5 text-[15px];
+    }
+
+    /* Loading state, toggled by resources/js/forms.js */
+    [data-loading] {
+        @apply pointer-events-none relative;
+        color: transparent !important;
+    }
+
+    [data-loading]::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 9999px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        animation: spin 0.7s linear infinite;
+    }
+
+    .btn-secondary[data-loading]::after,
+    .btn-ghost[data-loading]::after {
+        border-color: var(--color-gray-200);
+        border-top-color: var(--color-gray-700);
+    }
+
+    /* Inline text actions used inside tables */
+    .link {
+        @apply inline-flex items-center gap-1 text-sm font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 transition-colors hover:decoration-gray-900;
+    }
+
+    .link-accent {
+        @apply text-brand-700 decoration-brand-200 hover:decoration-brand-600;
     }
 }
 
 /* ================================================================
-   CARDS
+   SURFACES
+   Radius: var(--radius-lg) = 16px for cards
    ================================================================ */
 
 @layer components {
     .card {
-        @apply bg-white p-4 sm:p-6;
+        @apply border p-5 sm:p-7;
+        border-radius: var(--radius-lg);
+        border-color: var(--color-border);
+        background-color: var(--color-surface-elevated);
+        box-shadow: var(--shadow-diffuse);
+    }
 
-        border: var(--nb-border-width) solid var(--nb-border-color);
-        border-radius: var(--nb-radius);
+    .card-flush {
+        @apply p-0 sm:p-0;
+    }
 
-        box-shadow:
-            var(--nb-shadow-lg)
-            var(--nb-shadow-lg)
-            0
-            var(--nb-border-color);
+    .section-title {
+        @apply text-[15px] font-semibold tracking-tight;
+        color: var(--color-text-primary);
+    }
+
+    .eyebrow {
+        @apply font-mono text-[11px] font-medium uppercase tracking-[0.14em];
+        color: var(--color-text-muted);
+    }
+
+    /* Web glassmorphism approximation (not official Apple Liquid Glass) */
+    .glass {
+        @apply border bg-white/5 backdrop-blur-xl;
+        border-color: rgba(255, 255, 255, 0.1);
+        background-color: rgba(255, 255, 255, 0.05);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 }
 
 /* ================================================================
    BADGES
+   Radius: var(--radius-full) = 9999px (pills)
+   One accent: brand. Semantic: success/warning/error for status only.
    ================================================================ */
 
 @layer components {
-    .badge {
-        @apply inline-flex items-center px-2.5 py-1 text-xs font-bold uppercase tracking-wide leading-none;
-
-        border: 2px solid var(--nb-border-color);
-        border-radius: var(--nb-radius-sm);
+    .badge,
+    .badge-success,
+    .badge-warning,
+    .badge-error,
+    .badge-brand,
+    .badge-neutral {
+        @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium leading-none whitespace-nowrap;
+        border-radius: var(--radius-full);
+        box-shadow: inset 0 0 0 1px var(--badge-ring, var(--color-border));
     }
 
-    .badge-green {
-        @apply bg-green-300 text-gray-900;
+    .badge-brand {
+        @apply bg-brand-100;
+        color: var(--color-brand-700);
+        --badge-ring: var(--color-brand-200);
     }
 
-    .badge-red {
-        @apply bg-red-300 text-gray-900;
+    .badge-neutral {
+        @apply bg-gray-100;
+        color: var(--color-gray-700);
+        --badge-ring: var(--color-gray-200);
     }
 
-    .badge-yellow {
-        @apply bg-yellow-300 text-gray-900;
+    .badge-success {
+        @apply bg-success-50;
+        color: var(--color-success-700);
+        --badge-ring: var(--color-success-100);
     }
 
-    .badge-gray {
-        @apply bg-gray-200 text-gray-900;
+    .badge-warning {
+        @apply bg-warning-50;
+        color: var(--color-warning-700);
+        --badge-ring: var(--color-warning-100);
     }
 
-    .badge-blue {
-         @apply bg-blue-300 text-gray-900; 
-        }
+    .badge-error {
+        @apply bg-error-50;
+        color: var(--color-error-700);
+        --badge-ring: var(--color-error-100);
+    }
+
+    .badge-dot::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: currentColor;
+        opacity: 0.8;
+    }
 }
 
 /* ================================================================
    FORM FIELDS
+   Radius: var(--radius-base) = 12px
    ================================================================ */
 
 @layer components {
     .form-field {
-        @apply w-full bg-white px-3 py-2.5 text-gray-900 transition sm:text-sm placeholder:text-gray-400;
+        @apply block w-full px-3.5 py-2.5 text-[15px] placeholder:text-gray-400 sm:text-sm;
+        border-radius: var(--radius-base);
+        border: 1px solid var(--color-border);
+        background-color: var(--color-surface-elevated);
+        color: var(--color-text-primary);
+        box-shadow: 0 1px 2px rgba(24, 24, 27, 0.04);
+        transition:
+            border-color 0.2s ease,
+            box-shadow 0.3s var(--ease-fluid);
+    }
 
-        border: var(--nb-border-width) solid var(--nb-border-color);
-        border-radius: var(--nb-radius-sm);
+    .form-field:hover:not(:disabled):not(:focus) {
+        border-color: var(--color-border-strong);
     }
 
     .form-field:focus {
+        border-color: var(--color-gray-900);
         outline: none;
+        box-shadow: 0 0 0 4px rgba(24, 24, 27, 0.08);
+    }
 
-        box-shadow:
-            var(--nb-shadow-sm)
-            var(--nb-shadow-sm)
-            0
-            var(--nb-border-color);
+    .form-field:user-invalid {
+        border-color: var(--color-error-600);
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
     }
 
     .form-field:disabled {
-        @apply bg-gray-100 text-gray-400;
+        @apply cursor-not-allowed;
+        background-color: var(--color-gray-100);
+        color: var(--color-gray-400);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .form-field {
+            border-color: var(--color-border);
+            background-color: var(--color-surface-elevated);
+            color: var(--color-text-primary);
+        }
+
+        .form-field:hover:not(:disabled):not(:focus) {
+            border-color: var(--color-border-strong);
+        }
+
+        .form-field:focus {
+            border-color: var(--color-gray-100);
+        }
+
+        .form-field:disabled {
+            background-color: var(--color-gray-800);
+            color: var(--color-gray-500);
+        }
+    }
+
+    select.form-field {
+        @apply appearance-none pr-10;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.1rem;
+    }
+
+    .field {
+        @apply flex flex-col gap-2;
+    }
+
+    .field-hint {
+        @apply text-xs;
+        color: var(--color-text-muted);
     }
 }
 
 /* ================================================================
-   OPTIONAL NEO-BRUTALIST UTILITY CLASSES
+   DATA TABLES
    ================================================================ */
 
 @layer components {
-    .nb-border {
-        border: var(--nb-border-width) solid var(--nb-border-color);
+    .table-wrap {
+        @apply -mx-5 overflow-x-auto sm:-mx-7;
     }
 
-    .nb-shadow {
+    .data-table {
+        @apply min-w-full text-sm;
+    }
+
+    .data-table thead th {
+        @apply border-b px-5 pb-3 text-left text-xs font-medium whitespace-nowrap first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
+        border-color: var(--color-border);
+        color: var(--color-text-muted);
+    }
+
+    .data-table tbody td {
+        @apply border-b px-5 py-3.5 align-middle first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
+        border-color: var(--color-gray-100);
+        color: var(--color-gray-700);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .data-table tbody td {
+            border-color: var(--color-gray-800);
+            color: var(--color-gray-300);
+        }
+    }
+
+    .data-table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    .data-table tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .data-table tbody tr:hover td {
+        @apply bg-gray-50/80;
+    }
+
+    @media (prefers-color-scheme: dark) {
+            .data-table tbody tr:hover td {
+                background-color: rgba(148, 148, 148, 0.1);
+            }
+        }
+
+    .num {
+        @apply font-mono tabular-nums;
+    }
+}
+
+/* ================================================================
+   SEGMENTED CONTROL (period / status filters)
+   Radius: var(--radius-lg) = 16px for container, var(--radius-base) = 12px for items
+   ================================================================ */
+
+@layer components {
+    .seg {
+        @apply inline-flex max-w-full gap-1 overflow-x-auto p-1;
+        border-radius: var(--radius-lg);
+        background-color: var(--color-gray-100);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .seg {
+            background-color: var(--color-gray-800);
+        }
+    }
+
+    .seg-item {
+        @apply inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium whitespace-nowrap;
+        border-radius: var(--radius-base);
+        color: var(--color-gray-600);
+        transition: all 0.2s ease;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .seg-item {
+            color: var(--color-gray-400);
+        }
+    }
+
+    .seg-item:hover {
+        color: var(--color-gray-900);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .seg-item:hover {
+            color: var(--color-gray-50);
+        }
+    }
+
+    .seg-item[aria-current="page"] {
+        @apply text-gray-900;
+        background-color: var(--color-surface-elevated);
         box-shadow:
-            var(--nb-shadow-md)
-            var(--nb-shadow-md)
-            0
-            var(--nb-border-color);
+            0 1px 2px rgba(24, 24, 27, 0.08),
+            0 0 0 1px var(--color-border);
     }
 
-    .nb-shadow-lg {
-        box-shadow:
-            var(--nb-shadow-lg)
-            var(--nb-shadow-lg)
-            0
-            var(--nb-border-color);
+    @media (prefers-color-scheme: dark) {
+        .seg-item[aria-current="page"] {
+            @apply text-white;
+            background-color: var(--color-surface-elevated);
+            box-shadow:
+                0 1px 2px rgba(0, 0, 0, 0.3),
+                0 0 0 1px var(--color-border);
+        }
+    }
+}
+
+/* ================================================================
+   ALERTS / FLASH MESSAGES
+   Radius: var(--radius-lg) = 16px
+   Uses semantic status colors
+   ================================================================ */
+
+@layer components {
+    .alert-success,
+    .alert-error {
+        @apply flex items-start gap-3 px-4 py-3 text-sm;
+        border-radius: var(--radius-lg);
+        animation: rise-in 0.6s var(--ease-fluid) both;
     }
 
-    .nb-radius {
-        border-radius: var(--nb-radius);
+    .alert-success {
+        border: 1px solid var(--color-success-200);
+        background-color: var(--color-success-50);
+        color: var(--color-success-700);
     }
 
-    .nb-radius-sm {
-        border-radius: var(--nb-radius-sm);
+    .alert-error {
+        border: 1px solid var(--color-error-200);
+        background-color: var(--color-error-50);
+        color: var(--color-error-700);
+    }
+}
+
+/* ================================================================
+   NAVIGATION
+   Radius: var(--radius-base) = 12px for links, var(--radius-lg) = 16px for monogram
+   Uses semantic color tokens
+   ================================================================ */
+
+@layer components {
+    .nav-link {
+        @apply relative inline-flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors;
+        border-radius: var(--radius-base);
+        color: var(--color-text-muted);
+    }
+
+    .nav-link:hover {
+        background-color: var(--color-gray-100);
+        color: var(--color-text-primary);
+    }
+
+    .nav-link[aria-current="page"] {
+        color: var(--color-text-primary);
+    }
+
+    .nav-link[aria-current="page"]::after {
+        content: "";
+        @apply absolute inset-x-3 -bottom-[13px] h-[2px] rounded-full;
+        background-color: var(--color-brand-600);
+    }
+
+    .nav-dark .nav-link {
+        color: var(--color-gray-400);
+    }
+
+    .nav-dark .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: white;
+    }
+
+    .nav-dark .nav-link[aria-current="page"] {
+        color: white;
+    }
+
+    .mobile-link {
+        @apply flex items-center gap-3 px-3 py-3 text-[15px] font-medium;
+        border-radius: var(--radius-lg);
+        color: var(--color-gray-700);
+    }
+
+    .mobile-link:hover {
+        background-color: var(--color-gray-100);
+    }
+
+    .mobile-link[aria-current="page"] {
+        @apply bg-gray-100 text-gray-900;
+    }
+
+    .nav-dark .mobile-link {
+        color: var(--color-gray-300);
+    }
+
+    .nav-dark .mobile-link:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-dark .mobile-link[aria-current="page"] {
+        @apply bg-white/10 text-white;
+    }
+
+    .monogram {
+        @apply inline-flex shrink-0 items-center justify-center font-mono text-[11px] font-semibold;
+        border-radius: var(--radius-full);
+        background-color: var(--color-brand-100);
+        color: var(--color-brand-800);
+        box-shadow: inset 0 0 0 1px rgba(159, 56, 38, 0.12);
+    }
+}
+
+/* ================================================================
+   CHAT
+   Radius: var(--radius-lg) = 16px, var(--radius-base) = 12px for bubble corners
+   Uses semantic color tokens
+   ================================================================ */
+
+@layer components {
+    .chat-bubble {
+        @apply max-w-[85%] px-3.5 py-2.5 text-sm leading-relaxed sm:max-w-sm;
+        border-radius: var(--radius-lg);
+        animation: rise-in 0.45s var(--ease-fluid) both;
+    }
+
+    .chat-bubble-me {
+        border-bottom-right-radius: var(--radius-base);
+        background-color: var(--color-gray-900);
+        color: white;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .chat-bubble-me {
+            background-color: var(--color-gray-100);
+            color: var(--color-gray-900);
+        }
+    }
+
+    .chat-bubble-them {
+        border-bottom-left-radius: var(--radius-base);
+        @apply border bg-white;
+        border-color: var(--color-border);
+        color: var(--color-gray-800);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .chat-bubble-them {
+            background-color: var(--color-surface-elevated);
+            border-color: var(--color-border);
+            color: var(--color-gray-100);
+        }
+    }
+
+    .chat-time {
+        @apply mt-1 font-mono text-[10px] opacity-60;
+    }
+}
+
+/* ================================================================
+   MOTION
+   Staggered reveal: add `.reveal` and set `--i` for the delay step.
+   ================================================================ */
+
+@keyframes rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes breathe {
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+    50% {
+        transform: scale(2.4);
+        opacity: 0;
+    }
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes sweep {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@layer components {
+    .reveal {
+        animation: rise-in 0.7s var(--ease-fluid) both;
+        animation-delay: calc(var(--i, 0) * 70ms);
+    }
+
+    .live-dot {
+        @apply relative inline-flex h-2 w-2 rounded-full bg-emerald-500;
+    }
+
+    .live-dot::before {
+        content: "";
+        @apply absolute inset-0 rounded-full bg-emerald-500;
+        animation: breathe 2.4s ease-in-out infinite;
+    }
+
+    .live-dot-amber,
+    .live-dot-amber::before {
+        @apply bg-amber-500;
+    }
+
+    .skeleton {
+        @apply rounded-lg;
+        background: linear-gradient(90deg, var(--color-gray-100) 0%, var(--color-gray-200) 50%, var(--color-gray-100) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 1.6s ease-in-out infinite;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
     }
 }
