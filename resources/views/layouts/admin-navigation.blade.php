@@ -28,6 +28,15 @@
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:gap-3">
+                <button type="button" data-theme-toggle class="icon-btn !text-gray-400 hover:!text-white hover:!bg-white/10" aria-label="Toggle color theme">
+                    <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                    <svg data-theme-icon-moon class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+                    </svg>
+                </button>
                 <span class="text-sm text-gray-300">{{ auth()->user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -51,6 +60,18 @@
             <a href="{{ route('admin.employees.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('admin.employees.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800' }}">Employees</a>
             <a href="{{ route('admin.leave.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('admin.leave.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800' }}">Leave Requests</a>
             <a href="{{ route('admin.borrow.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('admin.borrow.*') ? 'bg-gray-800 text-white' : 'text-gray-300 hover:bg-gray-800' }}">Borrow Requests</a>
+            <div class="flex items-center justify-between px-3 py-2">
+                <span class="text-base font-medium text-gray-300">Theme</span>
+                <button type="button" data-theme-toggle class="icon-btn !text-gray-400 hover:!text-white hover:!bg-white/10" aria-label="Toggle color theme">
+                    <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
+                        <circle cx="12" cy="12" r="4"/>
+                    </svg>
+                    <svg data-theme-icon-moon class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+                    </svg>
+                </button>
+            </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-gray-800">Log Out</button>
