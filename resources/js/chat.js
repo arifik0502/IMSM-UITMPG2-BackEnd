@@ -16,13 +16,13 @@ function appendMessage(message) {
     wrapper.className = `flex ${message.from_me ? 'justify-end' : 'justify-start'}`;
 
     const bubble = document.createElement('div');
-    bubble.className = `max-w-xs px-3 py-2 rounded-lg text-sm ${message.from_me ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-800'}`;
+    bubble.className = `chat-bubble ${message.from_me ? 'chat-bubble-me' : 'chat-bubble-them'}`;
 
     const body = document.createElement('p');
     body.textContent = message.body;
 
     const time = document.createElement('p');
-    time.className = 'text-[10px] mt-1 opacity-70';
+    time.className = 'chat-time';
     time.textContent = message.time;
 
     bubble.appendChild(body);
