@@ -2,36 +2,66 @@
 
 @source "../views/**/*.blade.php";
 @source "../js/**/*.js";
+@source not "../../storage";
+/* Laravel's default paginator markup ($model->links()) lives in vendor/. */
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+
+/* Make Tailwind's `dark:` variant follow the SAME rule as the tokens below:
+   the manual toggle (data-theme) wins, otherwise the OS preference. */
+@custom-variant dark {
+    &:where([data-theme="dark"], [data-theme="dark"] *) {
+        @slot;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+            @slot;
+        }
+    }
+}
 
 /* ================================================================
-   DESIGN READ
-   Reading this as: internal university staff dashboard (ISMS) for
-   UiTM staff/admin, with a premium / Apple-y restrained language —
-   soft depth, quiet glass, spring-ish motion — kept legible enough
-   for data tables and forms (not a marketing landing page).
-   DESIGN_VARIANCE: 6  MOTION_INTENSITY: 5  VISUAL_DENSITY: 4
+   IMSM / ISMS DESIGN SYSTEM
+   Internal UiTM staff-management UI: calm, legible, data-first.
+   Reference: SKILL.md, used for polish only (one accent, one radius
+   scale, real contrast, honest states, reduced-motion respected).
 
-   Brand note: UiTM's public identity uses purple + gold (from the
-   university crest). No official hex is published for web use, so
-   the purple/gold scales below are a considered approximation —
-   swap the raw values if UiTM issues an official style guide.
+   HOW THIS FILE IS ORGANISED
+     1. Theme        raw palette, radii, shadows, easing
+     2. Tokens       semantic light/dark variables (the ONLY place
+                     that changes per theme)
+     3. Base         element defaults
+     4. Layout       page shell, header, auth shell, brand
+     5. Components   buttons, surfaces, forms, badges, tables,
+                     filters, alerts, stats, links, navigation,
+                     chat, modal
+     6. Motion       keyframes + reduced-motion
 
-   Class names are unchanged from the previous stylesheet on purpose
-   — every Blade view keeps working with zero markup edits. Only the
-   tokens and visual treatment underneath were rebuilt.
+   RULES
+     - Views use these component classes for colour, border, shadow,
+       radius and type. Tailwind utilities in Blade are for layout
+       only (grid, flex, gap, spacing, responsive show/hide).
+     - Never hard-code a colour in a component: use a token, so
+       light and dark stay in sync automatically.
+     - Palette: UiTM purple is the one accent; gold is a single
+       deliberate highlight (active nav underline). The values are a
+       considered approximation, swap them here if UiTM issues an
+       official style guide.
    ================================================================ */
 
+/* ----------------------------------------------------------------
+   1. THEME
+   ---------------------------------------------------------------- */
 @theme {
-    --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+    /* System font stack: no web-font download, native look per OS. */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-    /* Radius scale — softer, more "rounded glass" than the old one */
-    --radius-base: 14px;     /* buttons, inputs */
-    --radius-lg: 20px;       /* cards, modals, nav */
-    --radius-full: 9999px;   /* pills, badges, avatars */
+    /* ONE radius scale, used everywhere. */
+    --radius-base: 12px;     /* buttons, inputs, tabs, small tiles */
+    --radius-lg: 18px;       /* cards, modals, alerts */
+    --radius-full: 9999px;   /* badges, avatars, icon buttons */
 
-    /* Neutrals — warm-cool gray, closer to Apple's system gray than
-       flat zinc. `gray-*` is used across every view. */
+    /* Neutrals: warm-cool gray. */
     --color-gray-50: #fafaf9;
     --color-gray-100: #f4f3f2;
     --color-gray-200: #e6e4e1;
@@ -44,8 +74,7 @@
     --color-gray-900: #18170f;
     --color-gray-950: #0c0b07;
 
-    /* Brand — UiTM purple. The ONE accent used everywhere (buttons,
-       focus, active states, links). */
+    /* Brand: UiTM purple. */
     --color-brand-50: #f7f3fb;
     --color-brand-100: #ece2f6;
     --color-brand-200: #d5bfec;
@@ -57,14 +86,13 @@
     --color-brand-800: #402366;
     --color-brand-900: #331d52;
 
-    /* Gold — UiTM's secondary identity color. Used sparingly, as a
-       single deliberate highlight (never a competing second accent). */
+    /* Gold: UiTM secondary, used sparingly. */
     --color-gold-400: #eac05a;
     --color-gold-500: #d7a52f;
     --color-gold-600: #b3861f;
     --color-gold-700: #8c6817;
 
-    /* Semantic status colors — for badges/alerts only, never general UI */
+    /* Status colours (badges, alerts, row actions only). */
     --color-success-50: #f1fbf3;
     --color-success-100: #dcf3e1;
     --color-success-200: #b9e6c4;
@@ -80,91 +108,161 @@
     --color-error-600: #c23c3c;
     --color-error-700: #9c2f2f;
 
-    --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);      /* Apple-ish "spring settle" */
-    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* slight overshoot, used only for small taps */
+    --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
 
     --shadow-diffuse: 0 1px 1px rgba(24, 23, 15, 0.03), 0 10px 28px -14px rgba(24, 23, 15, 0.16);
     --shadow-lift: 0 2px 4px rgba(24, 23, 15, 0.05), 0 24px 48px -18px rgba(24, 23, 15, 0.28);
-    --shadow-glow-brand: 0 0 0 4px rgba(124, 71, 186, 0.14);
-
+    --shadow-glow-brand: 0 0 0 4px rgba(124, 71, 186, 0.16);
 }
 
 /* ----------------------------------------------------------------
-   THEME TOKENS — light (default), then the OS-preference fallback,
-   then the manual override. All three define the exact same variable
-   list so `data-theme="dark"` (set by the navbar toggle) and a plain
-   dark-mode browser behave identically. See resources/js/theme.js.
+   2. TOKENS  (light default -> OS dark -> manual override)
+   The OS block and the [data-theme="dark"] block MUST list exactly
+   the same variables. The toggle lives in resources/js/theme.js.
    ---------------------------------------------------------------- */
 :root {
+    /* Layering and z-index scale */
+    --z-nav: 20;
+    --z-modal: 50;
+
+    /* Surfaces */
     --color-surface: var(--color-gray-50);
     --color-surface-elevated: #ffffff;
     --color-surface-sunken: var(--color-gray-100);
-    --color-table-border: var(--color-gray-100);
+    --color-glass: rgba(255, 255, 255, 0.78);
+    --color-hover: var(--color-gray-100);
     --color-row-hover: rgba(124, 71, 186, 0.05);
-    --color-text-primary: var(--color-gray-900);
-    --color-text-muted: var(--color-gray-500);
+
+    /* Lines */
     --color-border: var(--color-gray-200);
     --color-border-strong: var(--color-gray-300);
+    --color-table-border: var(--color-gray-100);
+
+    /* Text */
+    --color-text-primary: var(--color-gray-900);
+    --color-text-secondary: var(--color-gray-700);
+    --color-text-muted: var(--color-gray-500);
+    --color-accent-text: var(--color-brand-700);   /* links, brand marks */
+
+    /* Status tones: background / text / ring */
+    --tone-success-bg: var(--color-success-50);
+    --tone-success-fg: var(--color-success-700);
+    --tone-success-ring: var(--color-success-200);
+    --tone-warning-bg: var(--color-warning-50);
+    --tone-warning-fg: var(--color-warning-700);
+    --tone-warning-ring: var(--color-warning-100);
+    --tone-error-bg: var(--color-error-50);
+    --tone-error-fg: var(--color-error-700);
+    --tone-error-ring: var(--color-error-200);
+    --tone-brand-bg: var(--color-brand-100);
+    --tone-brand-fg: var(--color-brand-700);
+    --tone-brand-ring: var(--color-brand-200);
+    --tone-neutral-bg: var(--color-gray-100);
+    --tone-neutral-fg: var(--color-gray-700);
+    --tone-neutral-ring: var(--color-gray-200);
+
+    /* Chat */
     --chat-me-from: var(--color-brand-500);
     --chat-me-to: var(--color-brand-700);
+
     --shadow-tab-active: 0 1px 2px rgba(24, 23, 15, 0.08), 0 0 0 1px var(--color-border);
 
-    /* Subtle brand wash behind every page — replaces the old flat fill */
+    /* Soft brand wash behind every page */
     --page-gradient:
         radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.10), transparent 55%),
         radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.08), transparent 50%),
         radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.06), transparent 60%);
+
+    color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-    /* Only applies when the user hasn't explicitly chosen "light" */
     :root:not([data-theme="light"]) {
         --color-surface: #131210;
         --color-surface-elevated: #1c1b17;
         --color-surface-sunken: #232019;
-        --color-table-border: #232019;
-        --color-row-hover: rgba(151, 104, 205, 0.08);
-        --color-text-primary: var(--color-gray-50);
-        --color-text-muted: var(--color-gray-400);
+        --color-glass: rgba(19, 18, 16, 0.78);
+        --color-hover: rgba(255, 255, 255, 0.06);
+        --color-row-hover: rgba(151, 104, 205, 0.09);
         --color-border: #2c2a24;
         --color-border-strong: #3a382f;
-        --chat-me-from: var(--color-brand-400);
-        --chat-me-to: var(--color-brand-600);
+        --color-table-border: #26241e;
+        --color-text-primary: var(--color-gray-50);
+        --color-text-secondary: var(--color-gray-300);
+        --color-text-muted: var(--color-gray-400);
+        --color-accent-text: var(--color-brand-300);
+        --tone-success-bg: rgba(31, 157, 76, 0.16);
+        --tone-success-fg: #7fdc9b;
+        --tone-success-ring: rgba(31, 157, 76, 0.32);
+        --tone-warning-bg: rgba(215, 165, 47, 0.14);
+        --tone-warning-fg: #eac05a;
+        --tone-warning-ring: rgba(215, 165, 47, 0.30);
+        --tone-error-bg: rgba(194, 60, 60, 0.16);
+        --tone-error-fg: #f19a9a;
+        --tone-error-ring: rgba(194, 60, 60, 0.34);
+        --tone-brand-bg: rgba(151, 104, 205, 0.18);
+        --tone-brand-fg: var(--color-brand-200);
+        --tone-brand-ring: rgba(151, 104, 205, 0.34);
+        --tone-neutral-bg: rgba(255, 255, 255, 0.07);
+        --tone-neutral-fg: var(--color-gray-300);
+        --tone-neutral-ring: rgba(255, 255, 255, 0.12);
+        --chat-me-from: var(--color-brand-500);
+        --chat-me-to: var(--color-brand-700);
         --shadow-tab-active: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-border);
         --page-gradient:
             radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.18), transparent 55%),
             radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.10), transparent 50%),
             radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.14), transparent 60%);
+        color-scheme: dark;
     }
 }
 
 :root[data-theme="dark"] {
-    /* Explicit toggle — same values as the media-query block above */
     --color-surface: #131210;
     --color-surface-elevated: #1c1b17;
     --color-surface-sunken: #232019;
-    --color-table-border: #232019;
-    --color-row-hover: rgba(151, 104, 205, 0.08);
-    --color-text-primary: var(--color-gray-50);
-    --color-text-muted: var(--color-gray-400);
+    --color-glass: rgba(19, 18, 16, 0.78);
+    --color-hover: rgba(255, 255, 255, 0.06);
+    --color-row-hover: rgba(151, 104, 205, 0.09);
     --color-border: #2c2a24;
     --color-border-strong: #3a382f;
-    --chat-me-from: var(--color-brand-400);
-    --chat-me-to: var(--color-brand-600);
+    --color-table-border: #26241e;
+    --color-text-primary: var(--color-gray-50);
+    --color-text-secondary: var(--color-gray-300);
+    --color-text-muted: var(--color-gray-400);
+    --color-accent-text: var(--color-brand-300);
+    --tone-success-bg: rgba(31, 157, 76, 0.16);
+    --tone-success-fg: #7fdc9b;
+    --tone-success-ring: rgba(31, 157, 76, 0.32);
+    --tone-warning-bg: rgba(215, 165, 47, 0.14);
+    --tone-warning-fg: #eac05a;
+    --tone-warning-ring: rgba(215, 165, 47, 0.30);
+    --tone-error-bg: rgba(194, 60, 60, 0.16);
+    --tone-error-fg: #f19a9a;
+    --tone-error-ring: rgba(194, 60, 60, 0.34);
+    --tone-brand-bg: rgba(151, 104, 205, 0.18);
+    --tone-brand-fg: var(--color-brand-200);
+    --tone-brand-ring: rgba(151, 104, 205, 0.34);
+    --tone-neutral-bg: rgba(255, 255, 255, 0.07);
+    --tone-neutral-fg: var(--color-gray-300);
+    --tone-neutral-ring: rgba(255, 255, 255, 0.12);
+    --chat-me-from: var(--color-brand-500);
+    --chat-me-to: var(--color-brand-700);
     --shadow-tab-active: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--color-border);
     --page-gradient:
         radial-gradient(1100px circle at 10% -10%, rgba(124, 71, 186, 0.18), transparent 55%),
         radial-gradient(900px circle at 100% 0%, rgba(215, 165, 47, 0.10), transparent 50%),
         radial-gradient(1000px circle at 50% 120%, rgba(124, 71, 186, 0.14), transparent 60%);
+    color-scheme: dark;
 }
 
-/* ================================================================
-   BASE
-   ================================================================ */
-
+/* ----------------------------------------------------------------
+   3. BASE
+   ---------------------------------------------------------------- */
 @layer base {
     html {
         -webkit-tap-highlight-color: transparent;
+        scroll-padding-top: 5rem; /* keep anchors clear of the sticky nav */
     }
 
     body {
@@ -172,7 +270,6 @@
         background-image: var(--page-gradient);
         background-attachment: fixed;
         color: var(--color-text-primary);
-        font-feature-settings: "ss01", "cv11";
         -webkit-font-smoothing: antialiased;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
@@ -192,25 +289,88 @@
     :focus-visible {
         outline: 2px solid var(--color-brand-500);
         outline-offset: 2px;
-        border-radius: 4px;
     }
 
     input[type="checkbox"] {
+        @apply size-4 shrink-0;
         accent-color: var(--color-brand-600);
+    }
+
+    /* Tailwind v4 resets buttons to the default cursor; restore it. */
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
     }
 }
 
 /* ================================================================
-   BUTTONS
-   Filled pill-leaning shape, soft top highlight, gentle press.
+   4. LAYOUT
+   ================================================================ */
+@layer components {
+    .app-body {
+        @apply min-h-dvh;
+    }
+
+    /* Centred content column shared by nav, header and main */
+    .app-container {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .app-main {
+        @apply mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8;
+    }
+
+    .page-header {
+        border-bottom: 1px solid var(--color-border);
+        background-color: color-mix(in srgb, var(--color-surface-elevated) 72%, transparent);
+    }
+
+    .page-header .app-container {
+        @apply flex items-center gap-2 py-4;
+    }
+
+    .page-title {
+        @apply text-lg font-semibold tracking-tight;
+        color: var(--color-text-primary);
+    }
+
+    /* Login / register / guest forms */
+    .auth-shell {
+        @apply flex min-h-dvh flex-col items-center justify-center px-4 py-8;
+    }
+
+    .auth-card {
+        @apply w-full p-6 sm:max-w-md sm:p-8;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        background-color: var(--color-surface-elevated);
+        box-shadow: var(--shadow-diffuse);
+    }
+
+    .brand {
+        @apply inline-flex shrink-0 items-center gap-2;
+    }
+
+    .brand-mark {
+        color: var(--color-accent-text);
+    }
+
+    .brand-name {
+        @apply font-bold tracking-tight;
+        color: var(--color-text-primary);
+    }
+}
+
+/* ================================================================
+   5. COMPONENTS
    ================================================================ */
 
+/* ---- Buttons --------------------------------------------------- */
 @layer components {
     .btn,
     .btn-primary,
     .btn-secondary,
     .btn-danger,
-    .btn-accent,
     .btn-ghost {
         @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap select-none;
         border-radius: var(--radius-base);
@@ -226,44 +386,28 @@
     .btn-primary:active:not(:disabled),
     .btn-secondary:active:not(:disabled),
     .btn-danger:active:not(:disabled),
-    .btn-accent:active:not(:disabled),
     .btn-ghost:active:not(:disabled) {
-        transform: translateY(1px) scale(0.97);
+        transform: translateY(1px) scale(0.98);
     }
 
     .btn:disabled,
     .btn-primary:disabled,
     .btn-secondary:disabled,
     .btn-danger:disabled,
-    .btn-accent:disabled,
     .btn-ghost:disabled {
         @apply cursor-not-allowed opacity-50;
         transform: none;
         box-shadow: none;
     }
 
+    /* Primary action = UiTM purple */
     .btn-primary {
-        @apply text-white;
-        background: linear-gradient(180deg, var(--color-gray-800), var(--color-gray-900));
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.14),
-            0 1px 2px rgba(24, 23, 15, 0.25);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-        background: linear-gradient(180deg, var(--color-gray-700), var(--color-gray-800));
-        box-shadow:
-            inset 0 1px 0 rgba(255, 255, 255, 0.16),
-            0 10px 24px -10px rgba(24, 23, 15, 0.5);
-    }
-
-    .btn-accent {
         @apply text-white;
         background: linear-gradient(180deg, var(--color-brand-500), var(--color-brand-700));
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
     }
 
-    .btn-accent:hover:not(:disabled) {
+    .btn-primary:hover:not(:disabled) {
         background: linear-gradient(180deg, var(--color-brand-400), var(--color-brand-600));
         box-shadow:
             inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -271,14 +415,15 @@
     }
 
     .btn-secondary {
-        @apply border bg-white text-gray-800;
-        border-color: var(--color-border);
+        border: 1px solid var(--color-border);
+        background-color: var(--color-surface-elevated);
+        color: var(--color-text-primary);
         box-shadow: 0 1px 2px rgba(24, 23, 15, 0.04);
     }
 
     .btn-secondary:hover:not(:disabled) {
         border-color: var(--color-border-strong);
-        @apply bg-gray-50 text-gray-900;
+        background-color: var(--color-hover);
     }
 
     .btn-danger {
@@ -292,18 +437,20 @@
     }
 
     .btn-ghost {
-        @apply px-3 text-gray-600;
+        @apply px-3;
+        color: var(--color-text-muted);
     }
 
     .btn-ghost:hover:not(:disabled) {
-        @apply bg-gray-100 text-gray-900;
+        background-color: var(--color-hover);
+        color: var(--color-text-primary);
     }
 
     .btn-lg {
-        @apply px-5 py-3.5 text-[15px];
+        @apply px-5 py-3 text-[15px];
     }
 
-    /* Loading state, toggled by resources/js/forms.js */
+    /* Loading state: add the `data-loading` attribute to a button */
     [data-loading] {
         @apply pointer-events-none relative;
         color: transparent !important;
@@ -324,35 +471,77 @@
 
     .btn-secondary[data-loading]::after,
     .btn-ghost[data-loading]::after {
-        border-color: var(--color-gray-200);
-        border-top-color: var(--color-gray-700);
-    }
-
-    .link {
-        @apply inline-flex items-center gap-1 text-sm font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 transition-colors hover:decoration-gray-900;
-    }
-
-    .link-accent {
-        @apply text-brand-700 decoration-brand-200 hover:decoration-brand-600;
+        border-color: var(--color-border);
+        border-top-color: var(--color-text-secondary);
     }
 }
 
-/* ================================================================
-   SURFACES
-   ================================================================ */
+/* ---- Text links and row actions -------------------------------- */
+@layer components {
+    .link {
+        @apply inline-flex items-center gap-1 text-sm font-medium underline underline-offset-4 transition-colors;
+        color: var(--color-text-primary);
+        text-decoration-color: var(--color-border-strong);
+    }
 
+    .link:hover {
+        text-decoration-color: currentColor;
+    }
+
+    .link-accent {
+        color: var(--color-accent-text);
+        text-decoration-color: color-mix(in srgb, var(--color-accent-text) 35%, transparent);
+    }
+
+    .link-success {
+        color: var(--tone-success-fg);
+        text-decoration-color: color-mix(in srgb, var(--tone-success-fg) 35%, transparent);
+    }
+
+    .link-danger {
+        color: var(--tone-error-fg);
+        text-decoration-color: color-mix(in srgb, var(--tone-error-fg) 35%, transparent);
+    }
+
+    .text-muted {
+        color: var(--color-text-muted);
+    }
+
+    .text-strong {
+        color: var(--color-text-primary);
+    }
+
+    .text-success {
+        color: var(--tone-success-fg);
+    }
+}
+
+/* ---- Surfaces -------------------------------------------------- */
 @layer components {
     .card {
-        @apply border p-5 sm:p-7;
+        @apply p-5 sm:p-7;
+        border: 1px solid var(--color-border);
         border-radius: var(--radius-lg);
-        border-color: var(--color-border);
         background-color: var(--color-surface-elevated);
         box-shadow: var(--shadow-diffuse);
-        transition: box-shadow 0.35s var(--ease-fluid), transform 0.35s var(--ease-fluid);
     }
 
     .card-flush {
         @apply p-0 sm:p-0;
+    }
+
+    .card-danger {
+        border-color: var(--tone-error-ring);
+    }
+
+    /* Opt-in hover lift, only for cards that are themselves clickable */
+    .card-interactive {
+        transition: box-shadow 0.35s var(--ease-fluid), transform 0.35s var(--ease-fluid);
+    }
+
+    .card-interactive:hover {
+        box-shadow: var(--shadow-lift);
+        transform: translateY(-2px);
     }
 
     .section-title {
@@ -360,35 +549,49 @@
         color: var(--color-text-primary);
     }
 
-    .eyebrow {
-        @apply font-mono text-[11px] font-medium uppercase tracking-[0.14em];
+    /* Title on the left, action link on the right */
+    .section-head {
+        @apply mb-4 flex items-center justify-between gap-3;
+    }
+
+    /* Divided list rows inside a card (dashboard summaries) */
+    .list-row {
+        @apply flex items-center justify-between gap-3 pb-3 text-sm;
+        border-bottom: 1px solid var(--color-table-border);
+    }
+
+    .list-row:last-child {
+        @apply border-b-0 pb-0;
+    }
+
+    .empty-state {
+        @apply py-8 text-center text-sm;
         color: var(--color-text-muted);
-    }
-
-    /* Quiet glass — used for the sticky nav bars. Real backdrop-filter
-       blur, with a solid fallback for prefers-reduced-transparency. */
-    .glass {
-        @apply border;
-        border-color: rgba(255, 255, 255, 0.14);
-        background-color: rgba(255, 255, 255, 0.72);
-        backdrop-filter: blur(20px) saturate(160%);
-        -webkit-backdrop-filter: blur(20px) saturate(160%);
-        box-shadow: inset 0 -1px 0 rgba(24, 23, 15, 0.05);
-    }
-
-    @media (prefers-reduced-transparency: reduce) {
-        .glass {
-            background-color: var(--color-surface-elevated);
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-        }
     }
 }
 
-/* ================================================================
-   BADGES
-   ================================================================ */
+/* ---- Stat tiles ------------------------------------------------ */
+@layer components {
+    .stat-label {
+        @apply text-sm;
+        color: var(--color-text-muted);
+    }
 
+    .stat-value {
+        @apply mt-1 text-2xl font-semibold tracking-tight tabular-nums;
+        color: var(--color-text-primary);
+    }
+
+    .stat-value-warning {
+        color: var(--tone-warning-fg);
+    }
+
+    .stat-value-error {
+        color: var(--tone-error-fg);
+    }
+}
+
+/* ---- Badges ---------------------------------------------------- */
 @layer components {
     .badge,
     .badge-success,
@@ -398,58 +601,71 @@
     .badge-neutral {
         @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium leading-none whitespace-nowrap;
         border-radius: var(--radius-full);
-        box-shadow: inset 0 0 0 1px var(--badge-ring, var(--color-border));
-    }
-
-    .badge-brand {
-        @apply bg-brand-100;
-        color: var(--color-brand-700);
-        --badge-ring: var(--color-brand-200);
-    }
-
-    .badge-neutral {
-        @apply bg-gray-100;
-        color: var(--color-gray-700);
-        --badge-ring: var(--color-gray-200);
+        background-color: var(--tone-neutral-bg);
+        color: var(--tone-neutral-fg);
+        box-shadow: inset 0 0 0 1px var(--tone-neutral-ring);
     }
 
     .badge-success {
-        @apply bg-success-50;
-        color: var(--color-success-700);
-        --badge-ring: var(--color-success-100);
+        background-color: var(--tone-success-bg);
+        color: var(--tone-success-fg);
+        box-shadow: inset 0 0 0 1px var(--tone-success-ring);
     }
 
     .badge-warning {
-        @apply bg-warning-50;
-        color: var(--color-warning-700);
-        --badge-ring: var(--color-warning-100);
+        background-color: var(--tone-warning-bg);
+        color: var(--tone-warning-fg);
+        box-shadow: inset 0 0 0 1px var(--tone-warning-ring);
     }
 
     .badge-error {
-        @apply bg-error-50;
-        color: var(--color-error-700);
-        --badge-ring: var(--color-error-100);
+        background-color: var(--tone-error-bg);
+        color: var(--tone-error-fg);
+        box-shadow: inset 0 0 0 1px var(--tone-error-ring);
     }
 
-    .badge-dot::before {
-        content: "";
-        width: 6px;
-        height: 6px;
-        border-radius: 9999px;
-        background: currentColor;
-        opacity: 0.8;
+    .badge-brand {
+        background-color: var(--tone-brand-bg);
+        color: var(--tone-brand-fg);
+        box-shadow: inset 0 0 0 1px var(--tone-brand-ring);
+    }
+
+    /* Round unread counter on nav items and chat contacts.
+       (`.nav-badge*` are the same counter, positioned in the nav.) */
+    .badge-count,
+    .nav-badge,
+    .nav-badge-inline {
+        @apply inline-flex h-[1.15rem] min-w-[1.15rem] items-center justify-center px-1 text-[10px] font-semibold leading-none text-white;
+        border-radius: var(--radius-full);
+        background-color: var(--color-error-600);
     }
 }
 
-/* ================================================================
-   FORM FIELDS
-   ================================================================ */
-
+/* ---- Form fields ----------------------------------------------- */
 @layer components {
+    .field {
+        @apply flex flex-col gap-2;
+    }
+
+    .field-label {
+        @apply block text-sm font-medium;
+        color: var(--color-text-secondary);
+    }
+
+    .field-hint {
+        @apply text-xs;
+        color: var(--color-text-muted);
+    }
+
+    .field-error {
+        @apply space-y-0.5 text-sm;
+        color: var(--tone-error-fg);
+    }
+
     .form-field {
-        @apply block w-full px-3.5 py-2.5 text-[15px] placeholder:text-gray-400 sm:text-sm;
+        @apply block w-full px-3.5 py-2.5 text-[15px] sm:text-sm;
         border-radius: var(--radius-base);
-        border: 1px solid var(--color-border);
+        border: 1px solid var(--color-border-strong);
         background-color: var(--color-surface-elevated);
         color: var(--color-text-primary);
         box-shadow: 0 1px 2px rgba(24, 23, 15, 0.04);
@@ -458,8 +674,13 @@
             box-shadow 0.3s var(--ease-fluid);
     }
 
+    .form-field::placeholder {
+        color: var(--color-text-muted);
+        opacity: 1;
+    }
+
     .form-field:hover:not(:disabled):not(:focus) {
-        border-color: var(--color-border-strong);
+        border-color: var(--color-text-muted);
     }
 
     .form-field:focus {
@@ -470,13 +691,13 @@
 
     .form-field:user-invalid {
         border-color: var(--color-error-600);
-        box-shadow: 0 0 0 4px rgba(194, 60, 60, 0.12);
+        box-shadow: 0 0 0 4px rgba(194, 60, 60, 0.14);
     }
 
     .form-field:disabled {
         @apply cursor-not-allowed;
         background-color: var(--color-surface-sunken);
-        color: var(--color-gray-400);
+        color: var(--color-text-muted);
     }
 
     select.form-field {
@@ -487,39 +708,74 @@
         background-size: 1.1rem;
     }
 
-    .field {
-        @apply flex flex-col gap-2;
+    /* One-time-code input (password reset) */
+    .form-field-code {
+        @apply text-center text-lg font-semibold tracking-[0.5em];
     }
 
-    .field-hint {
-        @apply text-xs;
+    /* Wrapper + button for the show/hide password eye */
+    .input-wrap {
+        @apply relative;
+    }
+
+    .input-toggle {
+        @apply absolute top-0 right-0 flex h-full items-center justify-center px-3;
+        border-radius: 0 var(--radius-base) var(--radius-base) 0;
         color: var(--color-text-muted);
+        transition: color 0.2s ease;
+    }
+
+    .input-toggle:hover {
+        color: var(--color-text-primary);
+    }
+
+    .check-label {
+        @apply flex items-center gap-2 text-sm;
+        color: var(--color-text-secondary);
+    }
+
+    /* "or" separator between login options */
+    .divider {
+        @apply flex items-center gap-3 text-xs uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .divider::before,
+    .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background-color: var(--color-border);
     }
 }
 
-/* ================================================================
-   DATA TABLES
-   ================================================================ */
-
+/* ---- Data tables ----------------------------------------------- */
+/* Inside a .card, wrap the table in .table-wrap: it bleeds to the
+   card edges and scrolls sideways on small screens. */
 @layer components {
     .table-wrap {
         @apply -mx-5 overflow-x-auto sm:-mx-7;
     }
 
     .data-table {
-        @apply min-w-full text-sm;
+        @apply min-w-full text-sm tabular-nums;
     }
 
     .data-table thead th {
-        @apply border-b px-5 pb-3 text-left text-xs font-medium whitespace-nowrap first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
+        @apply border-b px-4 pb-3 text-left text-xs font-medium whitespace-nowrap first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
         border-color: var(--color-border);
         color: var(--color-text-muted);
     }
 
     .data-table tbody td {
-        @apply border-b px-5 py-3.5 align-middle first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
+        @apply border-b px-4 py-3.5 align-middle first:pl-5 sm:first:pl-7 last:pr-5 sm:last:pr-7;
         border-color: var(--color-table-border);
-        color: var(--color-gray-700);
+        color: var(--color-text-secondary);
+    }
+
+    /* Rows with multi-line cells (admin request lists) */
+    .data-table-top tbody td {
+        @apply align-top;
     }
 
     .data-table tbody tr:last-child td {
@@ -534,16 +790,22 @@
         background-color: var(--color-row-hover);
     }
 
-    .num {
-        @apply font-mono tabular-nums;
+    .data-table td.empty-state {
+        @apply py-8;
+    }
+
+    .data-table .cell-strong {
+        @apply font-medium;
+        color: var(--color-text-primary);
     }
 }
 
-/* ================================================================
-   SEGMENTED CONTROL (period / status filters)
-   ================================================================ */
-
+/* ---- Segmented control (period / status filters) --------------- */
 @layer components {
+    .filter-bar {
+        @apply mb-6 flex flex-wrap items-center gap-3;
+    }
+
     .seg {
         @apply inline-flex max-w-full gap-1 overflow-x-auto p-1;
         border-radius: var(--radius-lg);
@@ -553,47 +815,22 @@
     .seg-item {
         @apply inline-flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-medium whitespace-nowrap;
         border-radius: var(--radius-base);
-        color: var(--color-gray-600);
-        transition: all 0.25s var(--ease-fluid);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .seg-item {
-            color: var(--color-gray-400);
-        }
+        color: var(--color-text-muted);
+        transition: color 0.2s ease, background-color 0.25s var(--ease-fluid), box-shadow 0.25s var(--ease-fluid);
     }
 
     .seg-item:hover {
-        color: var(--color-gray-900);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .seg-item:hover {
-            color: var(--color-gray-50);
-        }
+        color: var(--color-text-primary);
     }
 
     .seg-item[aria-current="page"] {
-        @apply text-gray-900;
+        color: var(--color-text-primary);
         background-color: var(--color-surface-elevated);
         box-shadow: var(--shadow-tab-active);
     }
-
-    :root[data-theme="dark"] .seg-item[aria-current="page"] {
-        @apply text-white;
-    }
-
-    @media (prefers-color-scheme: dark) {
-        :root:not([data-theme="light"]) .seg-item[aria-current="page"] {
-            @apply text-white;
-        }
-    }
 }
 
-/* ================================================================
-   ALERTS / FLASH MESSAGES
-   ================================================================ */
-
+/* ---- Alerts / flash messages ----------------------------------- */
 @layer components {
     .alert-success,
     .alert-error {
@@ -603,32 +840,67 @@
     }
 
     .alert-success {
-        border: 1px solid var(--color-success-200);
-        background-color: var(--color-success-50);
-        color: var(--color-success-700);
+        border: 1px solid var(--tone-success-ring);
+        background-color: var(--tone-success-bg);
+        color: var(--tone-success-fg);
     }
 
     .alert-error {
-        border: 1px solid var(--color-error-200);
-        background-color: var(--color-error-50);
-        color: var(--color-error-700);
+        border: 1px solid var(--tone-error-ring);
+        background-color: var(--tone-error-bg);
+        color: var(--tone-error-fg);
     }
 }
 
-/* ================================================================
-   NAVIGATION
-   Sticky "quiet glass" bars — see .glass above.
-   ================================================================ */
-
+/* ---- Navigation ------------------------------------------------ */
+/* `.app-nav` is a sticky, blurred bar. Add `.nav-dark` for the admin
+   bar: it re-maps the text/hover/border tokens locally, so every
+   nav child below works unchanged on the dark bar. */
 @layer components {
+    .app-nav {
+        @apply sticky top-0;
+        z-index: var(--z-nav);
+        border-bottom: 1px solid var(--color-border);
+        background-color: var(--color-glass);
+        backdrop-filter: blur(20px) saturate(160%);
+        -webkit-backdrop-filter: blur(20px) saturate(160%);
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+        .app-nav {
+            background-color: var(--color-surface-elevated);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+    }
+
+    .app-nav-bar {
+        @apply flex h-16 items-center justify-between gap-4;
+    }
+
+    .nav-dark {
+        --color-text-primary: #ffffff;
+        --color-text-secondary: var(--color-gray-300);
+        --color-text-muted: var(--color-gray-400);
+        --color-hover: rgba(255, 255, 255, 0.08);
+        --color-border: rgba(255, 255, 255, 0.1);
+        --color-accent-text: var(--color-brand-300);
+        --tone-brand-bg: rgba(151, 104, 205, 0.18);
+        --tone-brand-fg: var(--color-brand-200);
+        --tone-error-fg: #f19a9a;
+        background-color: var(--color-gray-900);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
     .nav-link {
-        @apply relative inline-flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors;
+        @apply relative inline-flex items-center gap-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors;
         border-radius: var(--radius-base);
         color: var(--color-text-muted);
     }
 
     .nav-link:hover {
-        background-color: var(--color-gray-100);
+        background-color: var(--color-hover);
         color: var(--color-text-primary);
     }
 
@@ -636,16 +908,40 @@
         color: var(--color-text-primary);
     }
 
-    /* Icon-only round button — used for the theme toggle */
+    /* Gold underline: the one deliberate nod to UiTM's secondary colour */
+    .nav-link[aria-current="page"]::after {
+        content: "";
+        @apply absolute inset-x-3 -bottom-[13px] h-[2px] rounded-full;
+        background-color: var(--color-gold-500);
+    }
+
+    .nav-link-accent {
+        color: var(--color-accent-text);
+    }
+
+    .nav-link-danger:hover {
+        color: var(--tone-error-fg);
+    }
+
+    /* Unread counter pinned to a nav item (JS toggles `hidden`) */
+    .nav-badge {
+        @apply absolute -top-0.5 -right-0.5;
+    }
+
+    .nav-badge-inline {
+        @apply ml-auto;
+    }
+
+    /* Round icon-only button (theme toggle, modal close) */
     .icon-btn {
-        @apply inline-flex h-9 w-9 shrink-0 items-center justify-center;
+        @apply inline-flex size-9 shrink-0 items-center justify-center;
         border-radius: var(--radius-full);
         color: var(--color-text-muted);
         transition: background-color 0.2s ease, color 0.2s ease, transform 0.3s var(--ease-fluid);
     }
 
     .icon-btn:hover {
-        background-color: var(--color-gray-100);
+        background-color: var(--color-hover);
         color: var(--color-text-primary);
     }
 
@@ -653,78 +949,79 @@
         transform: scale(0.92);
     }
 
-    .nav-dark .icon-btn {
-        color: var(--color-gray-400);
-    }
-
-    .nav-dark .icon-btn:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-        color: white;
-    }
-
-    /* Gold underline — the one deliberate nod to UiTM's secondary
-       identity color, used nowhere else. */
-    .nav-link[aria-current="page"]::after {
-        content: "";
-        @apply absolute inset-x-3 -bottom-[13px] h-[2px] rounded-full;
-        background-color: var(--color-gold-500);
-    }
-
-    .nav-dark .nav-link {
-        color: var(--color-gray-400);
-    }
-
-    .nav-dark .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.06);
-        color: white;
-    }
-
-    .nav-dark .nav-link[aria-current="page"] {
-        color: white;
+    /* Mobile / tablet menu */
+    .mobile-menu {
+        @apply space-y-1 px-2 pt-2 pb-3;
+        border-top: 1px solid var(--color-border);
     }
 
     .mobile-link {
-        @apply flex items-center gap-3 px-3 py-3 text-[15px] font-medium;
-        border-radius: var(--radius-lg);
-        color: var(--color-gray-700);
+        @apply flex w-full items-center gap-3 px-3 py-3 text-left text-[15px] font-medium;
+        border-radius: var(--radius-base);
+        color: var(--color-text-secondary);
     }
 
     .mobile-link:hover {
-        background-color: var(--color-gray-100);
+        background-color: var(--color-hover);
     }
 
     .mobile-link[aria-current="page"] {
-        @apply bg-gray-100 text-gray-900;
+        background-color: var(--tone-brand-bg);
+        color: var(--tone-brand-fg);
     }
 
-    .nav-dark .mobile-link {
-        color: var(--color-gray-300);
-    }
-
-    .nav-dark .mobile-link:hover {
-        background-color: rgba(255, 255, 255, 0.06);
-    }
-
-    .nav-dark .mobile-link[aria-current="page"] {
-        @apply bg-white/10 text-white;
-    }
-
-    .monogram {
-        @apply inline-flex shrink-0 items-center justify-center font-mono text-[11px] font-semibold;
-        border-radius: var(--radius-full);
-        background: linear-gradient(160deg, var(--color-brand-100), var(--color-gold-400) 180%);
-        color: var(--color-brand-800);
-        box-shadow: inset 0 0 0 1px rgba(64, 35, 102, 0.14);
+    .mobile-link-danger {
+        color: var(--tone-error-fg);
     }
 }
 
-/* ================================================================
-   CHAT
-   ================================================================ */
-
+/* ---- Chat ------------------------------------------------------ */
 @layer components {
+    .chat-shell {
+        @apply grid grid-cols-1 md:h-[34rem] md:grid-cols-3;
+    }
+
+    .chat-sidebar {
+        @apply overflow-y-auto md:col-span-1 md:max-h-none md:border-r;
+        border-color: var(--color-border);
+    }
+
+    .chat-contact {
+        @apply flex items-center justify-between gap-2 px-4 py-3.5 md:py-3;
+        border-bottom: 1px solid var(--color-table-border);
+        transition: background-color 0.15s ease;
+    }
+
+    .chat-contact:hover,
+    .chat-contact:active {
+        background-color: var(--color-hover);
+    }
+
+    .chat-contact[aria-current="page"] {
+        background-color: var(--tone-brand-bg);
+    }
+
+    .chat-thread-head {
+        @apply flex items-center gap-3 px-4 py-3;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .chat-messages {
+        @apply flex-1 overflow-y-auto p-4;
+    }
+
+    .chat-messages > * + * {
+        margin-top: 0.75rem;
+    }
+
+    .chat-composer {
+        @apply flex gap-2 p-3;
+        border-top: 1px solid var(--color-border);
+    }
+
     .chat-bubble {
         @apply max-w-[85%] px-3.5 py-2.5 text-sm leading-relaxed sm:max-w-sm;
+        overflow-wrap: anywhere;
         border-radius: var(--radius-lg);
         animation: rise-in 0.4s var(--ease-fluid) both;
     }
@@ -732,34 +1029,42 @@
     .chat-bubble-me {
         border-bottom-right-radius: var(--radius-base);
         background: linear-gradient(180deg, var(--chat-me-from), var(--chat-me-to));
-        color: white;
+        color: #fff;
     }
 
     .chat-bubble-them {
         border-bottom-left-radius: var(--radius-base);
-        @apply border bg-white;
-        border-color: var(--color-border);
-        color: var(--color-gray-800);
-    }
-
-    @media (prefers-color-scheme: dark) {
-        .chat-bubble-them {
-            background-color: var(--color-surface-elevated);
-            border-color: var(--color-border);
-            color: var(--color-gray-100);
-        }
+        border: 1px solid var(--color-border);
+        background-color: var(--color-surface-elevated);
+        color: var(--color-text-primary);
     }
 
     .chat-time {
-        @apply mt-1 font-mono text-[10px] opacity-60;
+        @apply mt-1 text-[11px] tabular-nums opacity-70;
+    }
+}
+
+/* ---- Modal / camera -------------------------------------------- */
+@layer components {
+    /* Toggle visibility with the `hidden` utility (see webcam.js) */
+    .modal-backdrop {
+        @apply fixed inset-0 flex items-center justify-center px-4;
+        z-index: var(--z-modal);
+        background-color: rgba(12, 11, 7, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+    .camera-frame {
+        @apply relative aspect-video overflow-hidden;
+        border-radius: var(--radius-base);
+        background-color: var(--color-gray-950);
     }
 }
 
 /* ================================================================
-   MOTION
-   Staggered reveal: add `.reveal` and set `--i` for the delay step.
+   6. MOTION
    ================================================================ */
-
 @keyframes rise-in {
     from {
         opacity: 0;
@@ -799,18 +1104,14 @@
 }
 
 @layer components {
+    /* Optional staggered entrance: add `.reveal` and set `--i` per item */
     .reveal {
         animation: rise-in 0.6s var(--ease-fluid) both;
         animation-delay: calc(var(--i, 0) * 60ms);
     }
 
-    /* Gentle hover lift for cards that opt in */
-    .card:hover {
-        box-shadow: var(--shadow-lift);
-    }
-
     .live-dot {
-        @apply relative inline-flex h-2 w-2 rounded-full;
+        @apply relative inline-flex size-2 rounded-full;
         background-color: var(--color-success-600);
     }
 
@@ -821,14 +1122,9 @@
         animation: breathe 2.4s ease-in-out infinite;
     }
 
-    .live-dot-amber,
-    .live-dot-amber::before {
-        background-color: var(--color-gold-500);
-    }
-
     .skeleton {
         @apply rounded-lg;
-        background: linear-gradient(90deg, var(--color-gray-100) 0%, var(--color-gray-200) 50%, var(--color-gray-100) 100%);
+        background: linear-gradient(90deg, var(--color-surface-sunken) 0%, var(--color-border) 50%, var(--color-surface-sunken) 100%);
         background-size: 200% 100%;
         animation: shimmer 1.6s ease-in-out infinite;
     }
