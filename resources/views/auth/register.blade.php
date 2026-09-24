@@ -1,6 +1,6 @@
 <x-guest-layout>
 
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">
+    <h2 class="page-title mb-6">
         Create your account
     </h2>
 
@@ -9,7 +9,7 @@
         @csrf
 
         {{-- Name --}}
-        <div>
+        <div class="field">
             <x-input-label
                 for="name"
                 value="Name"
@@ -23,17 +23,15 @@
                 required
                 autofocus
                 autocomplete="name"
-                class="mt-1 block w-full"
             />
 
             <x-input-error
                 :messages="$errors->get('name')"
-                class="mt-2"
             />
         </div>
 
         {{-- Email --}}
-        <div>
+        <div class="field">
             <x-input-label
                 for="email"
                 value="Email"
@@ -46,23 +44,21 @@
                 :value="old('email')"
                 required
                 autocomplete="username"
-                class="mt-1 block w-full"
             />
 
             <x-input-error
                 :messages="$errors->get('email')"
-                class="mt-2"
             />
         </div>
 
         {{-- Password --}}
-        <div>
+        <div class="field">
             <x-input-label
                 for="password"
                 value="Password"
             />
 
-            <div class="relative mt-1">
+            <div class="input-wrap">
 
                 <x-text-input
                     id="password"
@@ -70,13 +66,13 @@
                     name="password"
                     required
                     autocomplete="new-password"
-                    class="block w-full pr-10"
+                    class="pr-11"
                 />
 
                 <button
                     type="button"
                     id="togglePassword"
-                    class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-gray-500 hover:text-gray-900 focus:outline-none"
+                    class="input-toggle"
                     aria-label="Show password"
                 >
                     <svg
@@ -141,18 +137,17 @@
 
             <x-input-error
                 :messages="$errors->get('password')"
-                class="mt-2"
             />
         </div>
 
         {{-- Confirm Password --}}
-        <div>
+        <div class="field">
             <x-input-label
                 for="password_confirmation"
                 value="Confirm Password"
             />
 
-            <div class="relative mt-1">
+            <div class="input-wrap">
 
                 <x-text-input
                     id="password_confirmation"
@@ -160,13 +155,13 @@
                     name="password_confirmation"
                     required
                     autocomplete="new-password"
-                    class="block w-full pr-10"
+                    class="pr-11"
                 />
 
                 <button
                     type="button"
                     id="togglePasswordConfirmation"
-                    class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-gray-500 hover:text-gray-900 focus:outline-none"
+                    class="input-toggle"
                     aria-label="Show password"
                 >
                     <svg
@@ -231,7 +226,6 @@
 
             <x-input-error
                 :messages="$errors->get('password_confirmation')"
-                class="mt-2"
             />
         </div>
 
@@ -241,13 +235,13 @@
         </x-primary-button>
 
         {{-- Login Link --}}
-        <p class="text-center text-sm text-gray-600">
+        <p class="text-center text-sm text-muted">
 
             Already registered?
 
             <a
                 href="{{ route('login') }}"
-                class="text-brand-600 hover:underline"
+                class="link link-accent"
             >
                 Log in
             </a>

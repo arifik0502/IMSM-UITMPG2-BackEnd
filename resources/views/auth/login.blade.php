@@ -1,6 +1,6 @@
 <x-guest-layout>
 
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">
+    <h2 class="page-title mb-6">
         Sign in to your account
     </h2>
 
@@ -13,7 +13,7 @@
 
         @csrf
 
-        <div>
+        <div class="field">
             <x-input-label
                 for="email"
                 value="Email"
@@ -27,22 +27,20 @@
                 required
                 autofocus
                 autocomplete="username"
-                class="mt-1 block w-full"
             />
 
             <x-input-error
                 :messages="$errors->get('email')"
-                class="mt-2"
             />
         </div>
 
-        <div>
+        <div class="field">
             <x-input-label
                 for="password"
                 value="Password"
             />
 
-            <div class="relative mt-1">
+            <div class="input-wrap">
 
                 <x-text-input
                     id="password"
@@ -50,13 +48,13 @@
                     name="password"
                     required
                     autocomplete="current-password"
-                    class="block w-full pr-10"
+                    class="pr-11"
                 />
 
                 <button
                     type="button"
                     id="togglePassword"
-                    class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-gray-500 hover:text-gray-900 focus:outline-none"
+                    class="input-toggle"
                     aria-label="Show password"
                 >
 
@@ -128,18 +126,16 @@
 
             <x-input-error
                 :messages="$errors->get('password')"
-                class="mt-2"
             />
         </div>
 
         <div class="flex items-center justify-between">
 
-            <label class="flex items-center gap-2 text-sm text-gray-600">
+            <label class="check-label">
 
                 <input
                     type="checkbox"
                     name="remember"
-                    class="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
                 >
 
                 <span>Remember me</span>
@@ -150,7 +146,7 @@
 
                 <a
                     href="{{ route('password.request') }}"
-                    class="text-sm text-brand-600 hover:underline"
+                    class="link link-accent"
                 >
                     Forgot password?
                 </a>
@@ -161,26 +157,20 @@
 
           <x-primary-button class="w-full">Log in</x-primary-button>
 
-        <div class="relative py-2">
-            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">or</span></div>
-        </div>
+        <div class="divider"><span>or</span></div>
 
     <a href="{{ route('google.redirect') }}"
-        class="btn-secondary w-full flex items-center justify-center gap-2 mt-3">
+        class="btn-secondary w-full">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81Z"/></svg>
         continue with Google
     </a>
                 
-         <div class="relative py-2">
-            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">or</span></div>
-        </div>
+         <div class="divider"><span>or</span></div>
 
 
-        <p class="text-sm text-center text-gray-600">
+        <p class="text-sm text-center text-muted">
             Don't have an account?
-            <a href="{{ route('register') }}" class="text-brand-600 hover:underline">Register</a>
+            <a href="{{ route('register') }}" class="link link-accent">Register</a>
         </p>
     </form>
 

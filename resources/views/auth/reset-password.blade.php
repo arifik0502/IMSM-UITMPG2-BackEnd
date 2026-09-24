@@ -1,8 +1,8 @@
 <x-guest-layout>
 
-    <h2 class="text-xl font-semibold text-gray-800 mb-1">Enter verification code</h2>
+    <h2 class="page-title mb-1">Enter verification code</h2>
 
-    <p class="text-sm text-gray-500 mb-6">
+    <p class="text-sm text-muted mb-6">
         We emailed a 6-digit code to your address. Enter it below along with your new password.
     </p>
 
@@ -11,7 +11,7 @@
     <form method="POST" action="{{ route('password.store') }}" class="space-y-5">
         @csrf
 
-        <div>
+        <div class="field">
             <x-input-label for="email" value="Email" />
 
             <x-text-input
@@ -22,13 +22,12 @@
                 required
                 autofocus
                 autocomplete="username"
-                class="mt-1 block w-full"
             />
 
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-error :messages="$errors->get('email')" />
         </div>
 
-        <div>
+        <div class="field">
             <x-input-label for="code" value="Verification Code" />
 
             <x-text-input
@@ -41,29 +40,29 @@
                 placeholder="123456"
                 autocomplete="one-time-code"
                 required
-                class="mt-1 block w-full tracking-[0.5em] text-center font-semibold"
+                class="form-field-code"
             />
 
-            <x-input-error :messages="$errors->get('code')" class="mt-2" />
+            <x-input-error :messages="$errors->get('code')" />
         </div>
 
-        <div>
+        <div class="field">
             <x-input-label for="password" value="New Password" />
 
-            <div class="relative mt-1">
+            <div class="input-wrap">
                 <x-text-input
                     id="password"
                     type="password"
                     name="password"
                     required
                     autocomplete="new-password"
-                    class="block w-full pr-12"
+                    class="pr-11"
                 />
 
                 <button
                     type="button"
                     onclick="togglePassword('password', 'eye-password', 'eye-off-password')"
-                    class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-gray-500 hover:text-gray-700"
+                    class="input-toggle"
                     aria-label="Show password"
                 >
                     <svg
@@ -118,26 +117,26 @@
                 </button>
             </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
-        <div>
+        <div class="field">
             <x-input-label for="password_confirmation" value="Confirm New Password" />
 
-            <div class="relative mt-1">
+            <div class="input-wrap">
                 <x-text-input
                     id="password_confirmation"
                     type="password"
                     name="password_confirmation"
                     required
                     autocomplete="new-password"
-                    class="block w-full pr-12"
+                    class="pr-11"
                 />
 
                 <button
                     type="button"
                     onclick="togglePassword('password_confirmation', 'eye-confirm', 'eye-off-confirm')"
-                    class="absolute right-0 top-0 h-full flex items-center justify-center px-3 text-gray-500 hover:text-gray-700"
+                    class="input-toggle"
                     aria-label="Show password"
                 >
                     <svg
@@ -192,16 +191,16 @@
                 </button>
             </div>
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password_confirmation')" />
         </div>
 
         <x-primary-button class="w-full">
             Reset Password
         </x-primary-button>
 
-        <p class="text-sm text-center text-gray-600">
+        <p class="text-sm text-center text-muted">
             Didn't get a code?
-            <a href="{{ route('password.request') }}" class="text-brand-600 hover:underline">
+            <a href="{{ route('password.request') }}" class="link link-accent">
                 Request a new one
             </a>
         </p>
