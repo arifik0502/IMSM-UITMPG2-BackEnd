@@ -17,24 +17,24 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gray-50 min-h-screen">
+<body class="app-body font-sans antialiased">
     @include('layouts.admin-navigation')
 
-    <header class="bg-white border-b border-gray-200">
-        <div class="max-w-6xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-lg font-semibold text-gray-800">{{ $header ?? '' }}</h1>
+    <header class="page-header">
+        <div class="app-container">
+            <h1 class="page-title">{{ $header ?? '' }}</h1>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <main class="app-main">
         @if (session('success'))
-            <div class="mb-6 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+            <div class="alert-success mb-6" role="status">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="mb-6 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+            <div class="alert-error mb-6" role="alert">
                 {{ session('error') }}
             </div>
         @endif

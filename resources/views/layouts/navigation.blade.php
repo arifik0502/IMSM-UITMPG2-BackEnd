@@ -1,38 +1,25 @@
-<nav class="sticky top-0 z-20 bg-white border-b-[3px] border-gray-900">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
-                    <x-application-logo class="w-8 h-8 text-brand-600" />
-                    <span class="font-bold text-gray-800 hidden sm:block">{{ config('app.name') }}</span>
+<nav class="app-nav">
+    <div class="app-container">
+        <div class="app-nav-bar">
+            <div class="flex items-center gap-6">
+                <a href="{{ route('dashboard') }}" class="brand">
+                    <x-application-logo class="brand-mark w-8 h-8" />
+                    <span class="brand-name hidden sm:block">{{ config('app.name') }}</span>
                 </a>
 
-                <div class="hidden sm:flex sm:ml-8 sm:space-x-4 sm:items-center">
-                    <a href="{{ route('dashboard') }}"
-                       class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('dashboard') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Dashboard
-                    </a>
-                    <a href="{{ route('attendance.history') }}"
-                       class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('attendance.history') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Attendance History
-                    </a>
-                    <a href="{{ route('leave.index') }}"
-                       class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('leave.index') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Leave
-                    </a>
-                    <a href="{{ route('borrow.create') }}"
-                       class="px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('borrow.*') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
-                        Borrow Equipment
-                    </a>
-                    <a href="{{ route('chat.index') }}"
-                       class="relative px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('chat.*') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                <div class="hidden lg:flex lg:items-center lg:gap-1">
+                    <a href="{{ route('dashboard') }}" class="nav-link" @if (request()->routeIs('dashboard')) aria-current="page" @endif>Dashboard</a>
+                    <a href="{{ route('attendance.history') }}" class="nav-link" @if (request()->routeIs('attendance.history')) aria-current="page" @endif>Attendance History</a>
+                    <a href="{{ route('leave.index') }}" class="nav-link" @if (request()->routeIs('leave.index')) aria-current="page" @endif>Leave</a>
+                    <a href="{{ route('borrow.create') }}" class="nav-link" @if (request()->routeIs('borrow.*')) aria-current="page" @endif>Borrow Equipment</a>
+                    <a href="{{ route('chat.index') }}" class="nav-link" @if (request()->routeIs('chat.*')) aria-current="page" @endif>
                         Chat
-                        <span class="chat-unread-badge hidden absolute -top-1 -right-1 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold">0</span>
+                        <span class="chat-unread-badge nav-badge hidden">0</span>
                     </a>
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:gap-3">
+            <div class="hidden lg:flex lg:items-center lg:gap-1">
                 <button type="button" data-theme-toggle class="icon-btn" aria-label="Toggle color theme">
                     <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
@@ -43,19 +30,17 @@
                     </svg>
                 </button>
                 @if (auth()->user()->isAdmin())
-                    <a href="{{ route('admin.dashboard') }}" class="text-sm font-medium text-brand-600 hover:underline">Admin Panel</a>
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link nav-link-accent">Admin Panel</a>
                 @endif
-                <a href="{{ route('profile.edit') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">
-                    {{ auth()->user()->name }}
-                </a>
+                <a href="{{ route('profile.edit') }}" class="nav-link" @if (request()->routeIs('profile.*')) aria-current="page" @endif>{{ auth()->user()->name }}</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-sm font-medium text-gray-500 hover:text-red-600">Log Out</button>
+                    <button type="submit" class="nav-link nav-link-danger">Log Out</button>
                 </form>
             </div>
 
-            <div class="flex items-center sm:hidden">
-                <button id="mobile-menu-toggle" type="button" class="p-2 rounded-md text-gray-500 hover:bg-gray-100" aria-label="Toggle navigation">
+            <div class="flex items-center lg:hidden">
+                <button id="mobile-menu-toggle" type="button" class="icon-btn" aria-label="Toggle navigation">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -64,20 +49,24 @@
         </div>
     </div>
 
-    <div id="mobile-menu" class="hidden sm:hidden border-t border-gray-200">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50' }}">Dashboard</a>
-            <a href="{{ route('attendance.history') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('attendance.history') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50' }}">Attendance History</a>
-            <a href="{{ route('leave.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('leave.index') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50' }}">Leave</a>
-            <a href="{{ route('borrow.create') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('borrow.*') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50' }}">Borrow Equipment</a>
-            <a href="{{ route('chat.index') }}" class="relative block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('chat.*') ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50' }}">
-                Chat
-                <span class="chat-unread-badge hidden ml-2 inline-flex items-center justify-center min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[10px] font-semibold">0</span>
-            </a>
-            <a href="{{ route('profile.edit') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50">Profile ({{ auth()->user()->name }})</a>
-            <div class="flex items-center justify-between px-3 py-2">
-                <span class="text-base font-medium text-gray-600">Theme</span>
-                <button type="button" data-theme-toggle class="icon-btn" aria-label="Toggle color theme">
+    <div id="mobile-menu" class="hidden lg:hidden">
+        <div class="app-container">
+            <div class="mobile-menu">
+                <a href="{{ route('dashboard') }}" class="mobile-link" @if (request()->routeIs('dashboard')) aria-current="page" @endif>Dashboard</a>
+                <a href="{{ route('attendance.history') }}" class="mobile-link" @if (request()->routeIs('attendance.history')) aria-current="page" @endif>Attendance History</a>
+                <a href="{{ route('leave.index') }}" class="mobile-link" @if (request()->routeIs('leave.index')) aria-current="page" @endif>Leave</a>
+                <a href="{{ route('borrow.create') }}" class="mobile-link" @if (request()->routeIs('borrow.*')) aria-current="page" @endif>Borrow Equipment</a>
+                <a href="{{ route('chat.index') }}" class="mobile-link" @if (request()->routeIs('chat.*')) aria-current="page" @endif>
+                    Chat
+                    <span class="chat-unread-badge nav-badge-inline hidden">0</span>
+                </a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="mobile-link">Admin Panel</a>
+                @endif
+                <a href="{{ route('profile.edit') }}" class="mobile-link" @if (request()->routeIs('profile.*')) aria-current="page" @endif>Profile ({{ auth()->user()->name }})</a>
+                <div class="flex items-center justify-between px-3 py-2">
+                    <span class="text-[15px] font-medium text-muted">Theme</span>
+                    <button type="button" data-theme-toggle class="icon-btn" aria-label="Toggle color theme">
                     <svg data-theme-icon-sun class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.36 6.36-1.42-1.42M7.05 7.05 5.64 5.64m12.72 0-1.41 1.41M7.05 16.95l-1.41 1.41"/>
                         <circle cx="12" cy="12" r="4"/>
@@ -85,12 +74,13 @@
                     <svg data-theme-icon-moon class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
                     </svg>
-                </button>
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="mobile-link mobile-link-danger">Log Out</button>
+                </form>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-gray-50">Log Out</button>
-            </form>
         </div>
     </div>
 </nav>

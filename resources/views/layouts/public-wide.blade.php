@@ -16,15 +16,17 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-gray-50 min-h-screen">
-    <header class="bg-white border-b border-gray-200">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-2">
-            <x-application-logo class="w-8 h-8 text-brand-600" />
-            <span class="font-bold text-gray-800">{{ config('app.name') }}</span>
+<body class="app-body font-sans antialiased">
+    <header class="page-header">
+        <div class="app-container">
+            <div class="brand">
+                <x-application-logo class="brand-mark w-8 h-8" />
+                <span class="brand-name">{{ config('app.name') }}</span>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="app-main">
         {{ $slot }}
     </main>
 </body>
