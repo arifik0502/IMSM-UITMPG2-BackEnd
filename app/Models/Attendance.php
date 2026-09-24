@@ -103,23 +103,25 @@ class Attendance extends Model
      * Recalculate late_minutes / overtime_minutes / status based on clock_in and clock_out.
      */
     public function recalculateTimings(): void
-    {
-        $grace = (int) config('company.late_grace_minutes', 0);
+{
+    $grace = (int) config('company.late_grace_minutes', 0);
 
-        if ($this->clock_in) {
-            $latestOnTime = $this->scheduledStart()->copy()->addMinutes($grace);
-            $this->late_minutes = $this->clock_in->greaterThan($latestOnTime)
-                ? $latestOnTime->diffInMinutes($this->clock_in)
-                : 0;
-        }
+    if ($this->clock_in) {
+        $latestOnTime = $this->scheduledStart()->copy()->addMinutes($grace);
 
-        if ($this->clock_out) {
-            $scheduledEnd = $this->scheduledEnd();
-            $this->overtime_minutes = $this->clock_out->greaterThan($scheduledEnd)
-                ? $scheduledEnd->diffInMinutes($this->clock_out)
-                : 0;
-        }
-
-        $this->status = $this->late_minutes > 0 ? 'late' : 'present';
+        $this->late_minutes = $this->clock_in->greaterThan($latestOnTime)
+            ? (int) $latestOnTime->diffInMinutes($this->clock_in)
+            : 0;
     }
+
+    if ($this->clock_out) {
+        $scheduledEnd = $this->scheduledEnd();
+
+        $this->overtime_minutes = $this->clock_out->greaterThan($scheduledEnd)
+            ? (int) $scheduledEnd->diffInMinutes($this->clock_out)
+            : 0;
+    }
+
+    $this->status = $this->late_minutes > 0 ? 'late' : 'present';
+}
 }
