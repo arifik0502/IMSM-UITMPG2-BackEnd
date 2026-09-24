@@ -11,20 +11,20 @@
 </form>
 
 {{-- Camera modal --}}
-<div id="camera-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-        <div class="card w-full max-w-md">
-        <div class="flex items-center justify-between mb-4">
-                     <h3 id="camera-modal-title" class="font-bold uppercase tracking-wide text-gray-900">Take a selfie to clock in</h3>
-            <button type="button" id="camera-modal-close" class="text-gray-400 hover:text-gray-600" aria-label="Close">
+<div id="camera-modal" class="hidden modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="camera-modal-title">
+    <div class="card max-h-[92dvh] w-full max-w-md overflow-y-auto">
+        <div class="section-head">
+            <h3 id="camera-modal-title" class="section-title">Take a selfie to clock in</h3>
+            <button type="button" id="camera-modal-close" class="icon-btn" aria-label="Close">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
-        <div id="camera-error" class="hidden mb-3 text-sm text-red-600"></div>
+        <div id="camera-error" class="alert-error mb-3 hidden" role="alert"></div>
 
-        <div class="relative rounded-lg overflow-hidden bg-gray-900 aspect-video">
+        <div class="camera-frame">
             <video id="camera-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
             <img id="camera-preview" class="w-full h-full object-cover hidden" alt="Captured selfie preview">
         </div>
