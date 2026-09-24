@@ -1,7 +1,7 @@
 <section>
     <header class="mb-4">
-        <h2 class="font-semibold text-gray-800">Delete Account</h2>
-        <p class="text-sm text-gray-500">Once your account is deleted, all of its attendance and leave records will be permanently removed.</p>
+        <h2 class="section-title">Delete Account</h2>
+        <p class="text-sm text-muted">Once your account is deleted, all of its attendance and leave records will be permanently removed.</p>
     </header>
 
     <form method="POST" action="{{ route('profile.destroy') }}"
@@ -10,10 +10,10 @@
         @csrf
         @method('delete')
 
-        <div>
+        <div class="field">
             <x-input-label for="password_delete" value="Password" />
             <x-text-input id="password_delete" name="password" type="password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-input-error :messages="$errors->get('password')" />
         </div>
 
         <x-danger-button>Delete Account</x-danger-button>
