@@ -1,34 +1,34 @@
 @if (session('success'))
-    <div class="mb-6 rounded-md bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+    <div class="alert-success mb-6" role="status">
         {{ session('success') }}
     </div>
 @endif
 
 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
     <div class="card lg:col-span-2 h-fit">
-        <h2 class="font-semibold text-gray-800 mb-4">Book Equipment</h2>
+        <h2 class="section-title mb-4">Book Equipment</h2>
 
         <form method="POST" action="{{ route('borrow.store') }}" class="space-y-4">
             @csrf
 
             @guest
-                <div>
+                <div class="field">
                     <x-input-label for="guest_name" value="Full Name" />
                     <x-text-input id="guest_name" type="text" name="guest_name" :value="old('guest_name')" required />
-                    <x-input-error :messages="$errors->get('guest_name')" class="mt-2" />
+                    <x-input-error :messages="$errors->get('guest_name')" />
                 </div>
 
-                <div>
+                <div class="field">
                     <x-input-label for="guest_email" value="Email" />
                     <x-text-input id="guest_email" type="email" name="guest_email" :value="old('guest_email')" required />
-                    <x-input-error :messages="$errors->get('guest_email')" class="mt-2" />
+                    <x-input-error :messages="$errors->get('guest_email')" />
                 </div>
             @endguest
 
-            <div>
+            <div class="field">
                 <x-input-label for="equipment_id" value="Equipment" />
                 <select id="equipment_id" name="equipment_id" required
-                        class="block w-full form-field">
+                        class="form-field">
                     <option value="">Select equipment&hellip;</option>
                     @foreach ($equipmentList->groupBy('category') as $category => $items)
                         <optgroup label="{{ $category }}">
@@ -40,27 +40,27 @@
                         </optgroup>
                     @endforeach
                 </select>
-                <x-input-error :messages="$errors->get('equipment_id')" class="mt-2" />
+                <x-input-error :messages="$errors->get('equipment_id')" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div class="field">
                     <x-input-label for="borrow_date" value="Borrow Date" />
                     <x-text-input id="borrow_date" type="date" name="borrow_date" :value="old('borrow_date')" required />
-                    <x-input-error :messages="$errors->get('borrow_date')" class="mt-2" />
+                    <x-input-error :messages="$errors->get('borrow_date')" />
                 </div>
-                <div>
+                <div class="field">
                     <x-input-label for="return_date" value="Return Date" />
                     <x-text-input id="return_date" type="date" name="return_date" :value="old('return_date')" required />
-                    <x-input-error :messages="$errors->get('return_date')" class="mt-2" />
+                    <x-input-error :messages="$errors->get('return_date')" />
                 </div>
             </div>
 
-            <div>
+            <div class="field">
                 <x-input-label for="reason" value="Reason (optional)" />
                 <textarea id="reason" name="reason" rows="3"
-                          class="block w-full form-field">{{ old('reason') }}</textarea>
-                <x-input-error :messages="$errors->get('reason')" class="mt-2" />
+                          class="form-field">{{ old('reason') }}</textarea>
+                <x-input-error :messages="$errors->get('reason')" />
             </div>
 
             <x-primary-button class="w-full">Book Equipment</x-primary-button>
@@ -68,26 +68,26 @@
     </div>
 
     <div class="card lg:col-span-3">
-        <h2 class="font-semibold text-gray-800 mb-4">Current Availability</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full text-sm">
+        <h2 class="section-title mb-4">Current Availability</h2>
+        <div class="table-wrap">
+            <table class="data-table">
                 <thead>
-                    <tr class="text-left text-gray-500 border-b border-gray-200">
-                        <th class="py-2 pr-4">Code</th>
-                        <th class="py-2 pr-4">Category</th>
-                        <th class="py-2 pr-4">Status</th>
+                    <tr>
+                        <th>Code</th>
+                        <th>Category</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($equipmentList as $item)
-                        <tr class="border-b border-gray-100 last:border-0">
-                            <td class="py-2 pr-4 font-medium">{{ $item['code'] }}</td>
-                            <td class="py-2 pr-4">{{ $item['category'] }}</td>
-                            <td class="py-2 pr-4">
+                        <tr>
+                            <td class="cell-strong">{{ $item['code'] }}</td>
+                            <td>{{ $item['category'] }}</td>
+                            <td>
                                 @if ($item['available'])
-                                    <span class="badge-green">Available</span>
+                                    <span class="badge-success">Available</span>
                                 @else
-                                    <span class="badge-red">Booked until {{ $item['available_from'] }}</span>
+                                    <span class="badge-error">Booked until {{ $item['available_from'] }}</span>
                                 @endif
                             </td>
                         </tr>
