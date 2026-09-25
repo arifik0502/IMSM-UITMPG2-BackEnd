@@ -13,7 +13,7 @@ const chatMessages = document.getElementById('chat-messages');
 
 function appendMessage(message) {
     const wrapper = document.createElement('div');
-    wrapper.className = `flex ${message.from_me ? 'justify-end' : 'justify-start'}`;
+    wrapper.className = `chat-message flex ${message.from_me ? 'justify-end' : 'justify-start'}`;
 
     const bubble = document.createElement('div');
     bubble.className = `chat-bubble ${message.from_me ? 'chat-bubble-me' : 'chat-bubble-them'}`;
@@ -113,4 +113,26 @@ async function pollUnreadBadge() {
 if (chatBadges.length && chatBadgeUrl) {
     pollUnreadBadge();
     setInterval(pollUnreadBadge, 10000);
+}
+
+// ---- Contact search (client-side filter) ----
+const contactSearch = document.getElementById('contact-search');
+if (contactSearch) {
+    contactSearch.addEventListener('input', () => {
+        const q = contactSearch.value.trim().toLowerCase();
+        document.querySelectorAll('.chat-contact').forEach((el) => {
+            el.classList.toggle('hidden', q && !(el.dataset.name || '').includes(q));
+        });
+    });
+}
+
+// ---- Message search (filters messages currently loaded in the thread) ----
+const messageSearch = document.getElementById('message-search');
+if (messageSearch) {
+    messageSearch.addEventListener('input', () => {
+        const q = messageSearch.value.trim().toLowerCase();
+        document.querySelectorAll('.chat-message').forEach((el) => {
+            el.classList.toggle('hidden', q && !el.textContent.toLowerCase().includes(q));
+        });
+    });
 }
